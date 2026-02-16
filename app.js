@@ -6,7 +6,7 @@ const errorHandler = require("./src/middlewares/gErrHandler");
 const app = express();
 
 app.use(express.json());
-app.use("api/v1", routes);
+app.use("/api/v1", routes);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
