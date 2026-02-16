@@ -6,7 +6,7 @@ const ProdController = require("../controller/prod.controller");
 // C.R.U.D routes ===
 
 // Create
-// router.post("/");
+router.post("/", ProdController.createOne);
 
 // Read
 router.get("/", ProdController.getAll);

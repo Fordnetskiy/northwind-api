@@ -1,6 +1,22 @@
 const ProdService = require("../service/prod.service");
+const AppError = require("../utils/AppError");
 
 class ProdController {
+  // Create
+  createOne = async (req, res, next) => {
+    try {
+      const result = await ProdService.create(req.body);
+
+      res.status(201).json({
+        success: true,
+        message: "Product was created!",
+        ...result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   // Read all
   getAll = async (req, res, next) => {
     try {
@@ -19,6 +35,8 @@ class ProdController {
     try {
       const { id } = req.params;
       const result = await ProdService.getOne(id);
+
+      if (result.rowCount === 0) throw new AppError(404, "Product not exists");
 
       res.json({
         success: true,
