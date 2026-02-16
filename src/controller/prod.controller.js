@@ -1,13 +1,10 @@
-const db = require("../config/database");
+const ProdService = require("../service/prod.service");
 
 class ProdController {
   // Read all
   getAll = async (req, res, next) => {
     try {
-      const result = await db.query(`
-      SELECT * FROM products
-      LIMIT 20
-    `);
+      const result = await ProdService.getAll(req.query);
 
       res.json({
         success: true,
@@ -21,13 +18,7 @@ class ProdController {
   getOne = async (req, res, next) => {
     try {
       const { id } = req.params;
-      const result = await db.query(
-        `
-        SELECT * FROM products
-        WHERE product_id = $1
-        `,
-        [id],
-      );
+      const result = await ProdService.getOne(id);
 
       res.json({
         success: true,
