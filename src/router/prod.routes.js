@@ -6,17 +6,17 @@ const ProdController = require("../controller/prod.controller");
 // C.R.U.D routes ===
 
 // Create
-router.post("/");
+// router.post("/");
 
 // Read
 router.get("/", ProdController.getAll);
-router.get("/:id");
+router.get("/:id", ProdController.getOne);
 
 // update
-router.put("/:id");
+// router.put("/:id");
 
 // Delete
-router.delete("/:id");
+// router.delete("/:id");
 
 // ===
 
