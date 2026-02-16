@@ -8,7 +8,7 @@ class ProdController {
 
       res.json({
         success: true,
-        data: result.rows,
+        ...result,
       });
     } catch (error) {
       next(error);
