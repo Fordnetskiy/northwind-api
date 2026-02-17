@@ -16,7 +16,7 @@ router.get("/:id", ProdController.getOne);
 router.put("/:id", ProdController.update);
 
 // Delete
-// router.delete("/:id");
+router.delete("/:id", ProdController.delete);
 
 // ===
 

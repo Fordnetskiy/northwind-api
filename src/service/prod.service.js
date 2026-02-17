@@ -45,6 +45,7 @@ class ProdService {
         FROM products
         JOIN categories USING(category_id)
         JOIN suppliers USING(supplier_id)
+        WHERE is_deleted = false
         OFFSET $1
         LIMIT $2
       `,
@@ -53,10 +54,11 @@ class ProdService {
       db.query(`
         SELECT COUNT(*)
         FROM products
+        WHERE is_deleted = false
       `),
     ]);
 
-    const totalItems = parseInt(countRes.rows[0].count);
+    const totalItems = parseInt(countRes.rows[0].count - 1);
     const totalPages = Math.ceil(totalItems / limit);
 
     if (page > totalPages)
@@ -80,7 +82,7 @@ class ProdService {
         FROM products
         JOIN categories USING(category_id)
         JOIN suppliers USING(supplier_id)
-        WHERE product_id = $1
+        WHERE product_id = $1 AND is_deleted = false
         `,
       [id],
     );
@@ -107,6 +109,20 @@ class ProdService {
       [productName, supplierId, categoryId, unit_price, units_in_stock, id],
     );
 
+    return result.rows[0];
+  };
+
+  // Delete
+  delete = async (id) => {
+    const result = await db.query(
+      `
+      UPDATE products
+      SET is_deleted = true, discontinued = 1
+      WHERE product_id = $1
+      RETURNING *
+    `,
+      [id],
+    );
     return result.rows[0];
   };
 }

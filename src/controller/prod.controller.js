@@ -33,7 +33,7 @@ class ProdController {
   // Read one
   getOne = async (req, res, next) => {
     try {
-      const { id } = req.params;
+      const id = parseInt(req.params.id);
       const result = await ProdService.getOne(id);
 
       if (result.rowCount === 0) throw new AppError(404, "Product not exists");
@@ -57,6 +57,23 @@ class ProdController {
         succes: true,
         message: "Product was updated!",
         data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  // Delete
+  delete = async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+
+      const result = await ProdService.delete(id);
+
+      res.status(200).json({
+        success: true,
+        message: "Product was deleted!",
+        product: result,
       });
     } catch (error) {
       next(error);
