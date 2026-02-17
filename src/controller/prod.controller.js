@@ -83,6 +83,8 @@ class ProdController {
 
       const result = await ProdService.delete(id);
 
+      if (result.rowCount === 0) throw new AppError(404, "Product not exists!");
+
       res.status(200).json({
         success: true,
         message: "Product was deleted!",
