@@ -46,6 +46,21 @@ class ProdController {
       next(error);
     }
   };
+
+  // Update
+  update = async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      const result = await ProdService.update(req.body, id);
+
+      res.status(200).json({
+        succes: true,
+        data: result.rows[0],
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = new ProdController();

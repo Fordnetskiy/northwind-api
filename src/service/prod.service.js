@@ -48,7 +48,7 @@ class ProdService {
     const [prodRes, countRes] = await Promise.all([
       db.query(
         `
-        SELECT category_name, product_id, product_name, unit_price, company_name
+        SELECT category_name, product_id, product_name, unit_price, units_in_stock, company_name
         FROM products
         JOIN categories USING(category_id)
         JOIN suppliers USING(supplier_id)
@@ -83,13 +83,35 @@ class ProdService {
   getOne = async (id) => {
     const result = db.query(
       `
-        SELECT category_name, product_id, product_name, unit_price, company_name
+        SELECT category_name, product_id, product_name, unit_price, units_in_stock, company_name
         FROM products
         JOIN categories USING(category_id)
         JOIN suppliers USING(supplier_id)
         WHERE product_id = $1
         `,
       [id],
+    );
+
+    return result;
+  };
+
+  // Update
+  update = async (data, id) => {
+    const { productName, supplierId, categoryId, unit_price, units_in_stock } =
+      data;
+
+    if (!data) throw new AppError(400, "Wrong data");
+
+    if (typeof unit_price && typeof units_in_stock !== "number")
+      throw new AppError(400, "Price or quantity must be a number!");
+
+    const result = await db.query(
+      `
+      UPDATE products SET
+      product_name = $1, supplier_id = $2, category_id = $3, unit_price = $4, units_in_stock = $5
+      WHERE product_id = $6
+    `,
+      [productName, supplierId, categoryId, unit_price, units_in_stock, id],
     );
 
     return result;

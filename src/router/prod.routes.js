@@ -12,8 +12,8 @@ router.post("/", ProdController.createOne);
 router.get("/", ProdController.getAll);
 router.get("/:id", ProdController.getOne);
 
-// update
-// router.put("/:id");
+// Update
+router.put("/:id", ProdController.update);
 
 // Delete
 // router.delete("/:id");
