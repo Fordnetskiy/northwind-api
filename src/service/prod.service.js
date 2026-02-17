@@ -5,7 +5,7 @@ class ProdService {
   // Statistics
   stats = async (q) => {
     const result = await db.query(`
-      SELECTcc COUNT(*) AS total_products,
+      SELECT COUNT(*) AS total_products,
              MIN(unit_price) AS minimum_price,
              MAX(unit_price) AS maximum_price,
              CEIL(AVG(unit_price)) AS average_price,
