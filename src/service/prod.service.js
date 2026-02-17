@@ -2,10 +2,10 @@ const db = require("../config/database");
 const AppError = require("../utils/AppError");
 
 class ProdService {
-  // Stats
+  // Statistics
   stats = async (q) => {
     const result = await db.query(`
-      SELECT COUNT(*) AS total_products,
+      SELECTcc COUNT(*) AS total_products,
              MIN(unit_price) AS minimum_price,
              MAX(unit_price) AS maximum_price,
              CEIL(AVG(unit_price)) AS average_price,

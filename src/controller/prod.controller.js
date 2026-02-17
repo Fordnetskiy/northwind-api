@@ -2,7 +2,7 @@ const ProdService = require("../service/prod.service");
 const AppError = require("../utils/AppError");
 
 class ProdController {
-  // Stats
+  // Statistics
   stats = async (req, res, next) => {
     try {
       const result = await ProdService.stats(req.query);
