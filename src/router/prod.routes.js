@@ -3,6 +3,11 @@ const router = Router();
 
 const ProdController = require("../controller/prod.controller");
 
+// Statistic routes ===
+router.get("/stats", ProdController.stats);
+
+// ===
+
 // C.R.U.D routes ===
 
 // Create
