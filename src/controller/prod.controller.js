@@ -10,7 +10,7 @@ class ProdController {
       res.status(201).json({
         success: true,
         message: "Product was created!",
-        ...result,
+        product: result,
       });
     } catch (error) {
       next(error);
@@ -55,7 +55,8 @@ class ProdController {
 
       res.status(200).json({
         succes: true,
-        data: result.rows[0],
+        message: "Product was updated!",
+        data: result,
       });
     } catch (error) {
       next(error);

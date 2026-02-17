@@ -23,19 +23,12 @@ class ProdService {
       `
       INSERT INTO products 
       (product_id, product_name, supplier_id, category_id)
-      VALUES ($1, $2, $3, $4)
+      VALUES ($1, $2, $3, $4) RETURNING *
     `,
       [productId, productName, supplierId, categoryId],
     );
 
-    return {
-      product: {
-        productId,
-        productName,
-        supplierId,
-        categoryId,
-      },
-    };
+    return product.rows[0];
   };
 
   // Read
@@ -109,12 +102,12 @@ class ProdService {
       `
       UPDATE products SET
       product_name = $1, supplier_id = $2, category_id = $3, unit_price = $4, units_in_stock = $5
-      WHERE product_id = $6
+      WHERE product_id = $6 RETURNING *
     `,
       [productName, supplierId, categoryId, unit_price, units_in_stock, id],
     );
 
-    return result;
+    return result.rows[0];
   };
 }
 
