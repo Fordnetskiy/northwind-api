@@ -82,6 +82,23 @@ class SuppController {
       next(error);
     }
   };
+
+  // =============================
+
+  restore = async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      const result = await SuppService.restore(id);
+
+      res.status(200).json({
+        success: true,
+        message: "Supplier was restored!",
+        supplier: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = new SuppController();

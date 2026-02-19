@@ -20,4 +20,6 @@ router.delete("/:id", SuppController.delete);
 
 // ===
 
+router.post("/restore/:id", SuppController.restore);
+
 module.exports = router;

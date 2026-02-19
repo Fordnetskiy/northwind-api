@@ -157,6 +157,32 @@ class SuppService {
 
     return deletedItem;
   };
+
+  restore = async (id) => {
+    const isDeleted = await db.query(
+      `
+        SELECT supplier_id, is_deleted
+        FROM suppliers
+        WHERE supplier_id = $1
+      `,
+      [id],
+    );
+
+    if (isDeleted.rows[0].is_deleted === false)
+      throw new AppError(400, "Cannot restore the existing supplier!");
+
+    const restored = await db.query(
+      `
+      UPDATE suppliers
+      SET is_deleted = false
+      WHERE supplier_id = $1
+      RETURNING *
+    `,
+      [id],
+    );
+
+    return restored.rows[0];
+  };
 }
 
 module.exports = new SuppService();
