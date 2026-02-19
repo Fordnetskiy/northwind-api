@@ -80,10 +80,10 @@ class ProdService {
     return {
       products: prodRes.rows,
       pagination: {
-        totalItems,
-        totalPages,
-        currentPage: page,
-        itemsPerPage: limit,
+        total_items: totalItems,
+        total_pages: totalPages,
+        current_page: page,
+        items_per_page: limit,
       },
     };
   };

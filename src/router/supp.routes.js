@@ -9,7 +9,7 @@ const SuppController = require("../controller/supp.controller");
 // router.post("/");
 
 // Read
-// router.get("/", SuppController.getAll);
+router.get("/", SuppController.getAll);
 router.get("/:id", SuppController.getOne);
 
 // // Update

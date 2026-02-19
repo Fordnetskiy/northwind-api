@@ -4,18 +4,18 @@ const AppError = require("../utils/AppError");
 class SuppController {
   // CRUD
   // Read
-  // getAll = async (req, res, next) => {
-  //   try {
-  //     const result = await SuppService(req.query);
-  //     if (!result) throw new AppError(404, "List is empty");
-  //     res.status(200).json({
-  //       success: true,
-  //       data: result,
-  //     });
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // };
+  getAll = async (req, res, next) => {
+    try {
+      const result = await SuppService.getAll(req.query);
+
+      res.status(200).json({
+        success: true,
+        ...result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 
   getOne = async (req, res, next) => {
     try {
