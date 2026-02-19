@@ -67,6 +67,21 @@ class SuppController {
       next(error);
     }
   };
+
+  // Delete
+  delete = async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      await SuppService.delete(id);
+
+      res.status(200).json({
+        success: true,
+        message: "Supplier was deleted",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = new SuppController();

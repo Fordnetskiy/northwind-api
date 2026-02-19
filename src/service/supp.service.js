@@ -55,6 +55,7 @@ class SuppService {
         SELECT supplier_id, company_name,
         contact_name, phone, city, country
         FROM suppliers
+        WHERE is_deleted = false
         ORDER BY supplier_id
         OFFSET $1
         LIMIT $2
@@ -89,7 +90,7 @@ class SuppService {
       `
       SELECT * 
       FROM suppliers
-      WHERE supplier_id = $1
+      WHERE supplier_id = $1 AND is_deleted = false
     `,
       [id],
     );
@@ -122,7 +123,7 @@ class SuppService {
       contact_name = $2, contact_title = $3,
       address = $4, city = $5, region = $6, postal_code = $7, country = $8, phone = $9,
       fax = $10, homepage = $11
-      WHERE supplier_id = $12
+      WHERE supplier_id = $12 AND is_deleted = false
       RETURNING *
     `,
       [
@@ -142,6 +143,19 @@ class SuppService {
     );
 
     return updatedItem.rows[0];
+  };
+
+  delete = async (id) => {
+    const deletedItem = await db.query(
+      `
+      UPDATE suppliers
+      SET is_deleted = true
+      WHERE supplier_id = $1
+    `,
+      [id],
+    );
+
+    return deletedItem;
   };
 }
 
