@@ -6,17 +6,17 @@ const SuppController = require("../controller/supp.controller");
 // C.R.U.D routes ===
 
 // Create
-router.post("/");
+// router.post("/");
 
 // Read
-router.get("/");
-router.get("/:id");
+// router.get("/", SuppController.getAll);
+router.get("/:id", SuppController.getOne);
 
-// Update
-router.put("/:id");
+// // Update
+// router.put("/:id");
 
-// Delete
-router.delete("/:id");
+// // Delete
+// router.delete("/:id");
 
 // ===
 
