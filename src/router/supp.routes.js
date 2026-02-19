@@ -6,7 +6,7 @@ const SuppController = require("../controller/supp.controller");
 // C.R.U.D routes ===
 
 // Create
-// router.post("/");
+router.post("/", SuppController.create);
 
 // Read
 router.get("/", SuppController.getAll);

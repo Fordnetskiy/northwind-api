@@ -3,6 +3,22 @@ const AppError = require("../utils/AppError");
 
 class SuppController {
   // CRUD
+
+  // Create
+  create = async (req, res, next) => {
+    try {
+      const result = await SuppService.create(req.body);
+
+      res.status(201).json({
+        success: true,
+        message: "New supplier was added",
+        supplier: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   // Read
   getAll = async (req, res, next) => {
     try {

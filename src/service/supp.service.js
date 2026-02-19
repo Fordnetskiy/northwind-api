@@ -2,6 +2,47 @@ const db = require("../config/database");
 const AppError = require("../utils/AppError");
 
 class SuppService {
+  create = async (data) => {
+    const {
+      supplierId,
+      companyName,
+      contactName,
+      contactTitle,
+      address,
+      city,
+      postalCode,
+      country,
+      phone,
+    } = data;
+
+    if (typeof supplierId !== "number")
+      throw new AppError(400, "ID must be a number!");
+
+    const newItem = await db.query(
+      `
+      INSERT INTO suppliers (
+        supplier_id, company_name, contact_name, contact_title, address, city, postal_code, country, phone
+      ) VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8, $9
+      )
+        RETURNING *
+    `,
+      [
+        supplierId,
+        companyName,
+        contactName,
+        contactTitle,
+        address,
+        city,
+        postalCode,
+        country,
+        phone,
+      ],
+    );
+
+    return newItem.rows[0];
+  };
+
   getAll = async (q) => {
     // Pagination
     const page = parseInt(q.page) || 1;
