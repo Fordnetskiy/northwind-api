@@ -65,6 +65,7 @@ class SuppService {
       db.query(`
         SELECT COUNT(*)
         FROM suppliers
+        WHERE is_deleted = false
       `),
     ]);
 
@@ -142,6 +143,9 @@ class SuppService {
       ],
     );
 
+    if (updatedItem.rowCount === 0)
+      throw new AppError(404, "Supplier not exists");
+
     return updatedItem.rows[0];
   };
 
@@ -167,6 +171,9 @@ class SuppService {
       `,
       [id],
     );
+
+    if (isDeleted.rowCount === 0)
+      throw new AppError(404, "Supplier not found!");
 
     if (isDeleted.rows[0].is_deleted === false)
       throw new AppError(400, "Cannot restore the existing supplier!");
