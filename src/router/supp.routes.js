@@ -13,7 +13,7 @@ router.get("/", SuppController.getAll);
 router.get("/:id", SuppController.getOne);
 
 // // Update
-// router.put("/:id");
+router.put("/:id", SuppController.updateOne);
 
 // // Delete
 // router.delete("/:id");

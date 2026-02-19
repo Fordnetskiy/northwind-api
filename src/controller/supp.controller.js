@@ -51,6 +51,22 @@ class SuppController {
       next(error);
     }
   };
+
+  // Update
+  updateOne = async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      const result = await SuppService.update(req.body, id);
+
+      res.status(200).json({
+        success: true,
+        message: "Supplier was updated",
+        supplier: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = new SuppController();

@@ -98,6 +98,51 @@ class SuppService {
 
     return result.rows[0];
   };
+
+  update = async (data, id) => {
+    const {
+      supplierId,
+      companyName,
+      contactName,
+      contactTitle,
+      address,
+      city,
+      region,
+      postalCode,
+      country,
+      phone,
+      fax,
+      homepage,
+    } = data;
+
+    const updatedItem = await db.query(
+      `
+      UPDATE suppliers
+      SET company_name = $1,
+      contact_name = $2, contact_title = $3,
+      address = $4, city = $5, region = $6, postal_code = $7, country = $8, phone = $9,
+      fax = $10, homepage = $11
+      WHERE supplier_id = $12
+      RETURNING *
+    `,
+      [
+        companyName,
+        contactName,
+        contactTitle,
+        address,
+        city,
+        region,
+        postalCode,
+        country,
+        phone,
+        fax,
+        homepage,
+        id,
+      ],
+    );
+
+    return updatedItem.rows[0];
+  };
 }
 
 module.exports = new SuppService();
