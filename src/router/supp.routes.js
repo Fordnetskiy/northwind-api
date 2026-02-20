@@ -1,19 +1,24 @@
 const { Router } = require("express");
 const router = Router();
+const validade = require("../middlewares/validate");
+const {
+  createSuppSchema,
+  updateSuppSchema,
+} = require("../validation/supp.schema");
 
 const SuppController = require("../controller/supp.controller");
 
 // C.R.U.D routes ===
 
 // Create
-router.post("/", SuppController.create);
+router.post("/", validade(createSuppSchema), SuppController.create);
 
 // Read
 router.get("/", SuppController.getAll);
 router.get("/:id", SuppController.getOne);
 
 // // Update
-router.put("/:id", SuppController.updateOne);
+router.put("/:id", validade(updateSuppSchema), SuppController.updateOne);
 
 // // Delete
 router.delete("/:id", SuppController.delete);

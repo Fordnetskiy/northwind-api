@@ -15,9 +15,6 @@ class SuppService {
       phone,
     } = data;
 
-    if (typeof supplierId !== "number")
-      throw new AppError(400, "ID must be a number!");
-
     const newItem = await db.query(
       `
       INSERT INTO suppliers (
@@ -103,7 +100,6 @@ class SuppService {
 
   update = async (data, id) => {
     const {
-      supplierId,
       companyName,
       contactName,
       contactTitle,
