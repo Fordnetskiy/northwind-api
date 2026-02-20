@@ -19,19 +19,6 @@ class ProdService {
   create = async (data) => {
     const { productId, productName, supplierId, categoryId } = data;
 
-    if (!productId || !productName || !supplierId || !categoryId)
-      throw new AppError(400, "Missing important fields!");
-
-    if (typeof productName !== "string")
-      throw new AppError(400, "Product name must be a string value!");
-
-    if (
-      typeof productId === "string" ||
-      typeof supplierId === "string" ||
-      typeof categoryId === "string"
-    )
-      throw new AppError(400, "IDs must be a numeric!");
-
     const product = await db.query(
       `
       INSERT INTO products 
@@ -59,6 +46,7 @@ class ProdService {
         JOIN categories USING(category_id)
         JOIN suppliers USING(supplier_id)
         WHERE is_deleted = false
+        ORDER BY product_id
         OFFSET $1
         LIMIT $2
       `,
@@ -105,13 +93,8 @@ class ProdService {
 
   // Update
   update = async (data, id) => {
-    const { productName, supplierId, categoryId, unit_price, units_in_stock } =
+    const { productName, supplierId, categoryId, unitPrice, unitsInStock } =
       data;
-
-    if (!data) throw new AppError(400, "Wrong data");
-
-    if (typeof unit_price && typeof units_in_stock !== "number")
-      throw new AppError(400, "Price or quantity must be a number!");
 
     const result = await db.query(
       `
@@ -119,8 +102,10 @@ class ProdService {
       product_name = $1, supplier_id = $2, category_id = $3, unit_price = $4, units_in_stock = $5
       WHERE product_id = $6 RETURNING *
     `,
-      [productName, supplierId, categoryId, unit_price, units_in_stock, id],
+      [productName, supplierId, categoryId, unitPrice, unitsInStock, id],
     );
+
+    if (result.rowCount === 0) throw new AppError(404, "Product not found");
 
     return result.rows[0];
   };
