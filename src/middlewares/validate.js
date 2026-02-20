@@ -1,4 +1,4 @@
-exports.validate = (schema, property = "body") => {
+const validate = (schema, property = "body") => {
   return (req, res, next) => {
     const { error, value } = schema.validate(req[property], {
       abortEarly: false,
@@ -6,9 +6,14 @@ exports.validate = (schema, property = "body") => {
     });
 
     if (error) {
+      const errors = error.details.map((d) => ({
+        field: d.context.key,
+        message: d.message,
+      }));
+
       return res.status(400).json({
-        message: "Validation error",
-        errors: error.details.map((e) => e.message),
+        success: false,
+        errors,
       });
     }
 
@@ -16,3 +21,5 @@ exports.validate = (schema, property = "body") => {
     next();
   };
 };
+
+module.exports = validate;
