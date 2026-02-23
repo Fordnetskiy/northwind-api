@@ -22,7 +22,6 @@ class OrderService {
 
     try {
       await client.query("BEGIN");
-      console.log("Begin");
 
       // Creates order -!-
       const orderRes = await client.query(
