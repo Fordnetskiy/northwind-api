@@ -2,6 +2,19 @@ const OrderService = require("../service/orders.service");
 const AppError = require("../utils/AppError");
 
 class OrderController {
+  create = async (req, res, next) => {
+    try {
+      const newOrder = await OrderService.create(req.body);
+
+      res.status(201).json({
+        success: true,
+        ...newOrder,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   getAll = async (req, res, next) => {
     try {
       const result = await OrderService.getAll(req.query);

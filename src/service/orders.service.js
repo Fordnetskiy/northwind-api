@@ -2,13 +2,106 @@ const db = require("../config/database");
 const AppError = require("../utils/AppError");
 
 class OrderService {
+  // Create ===
+  create = async (data) => {
+    // Data destructurization -!-
+    const {
+      customerId,
+      employeeId,
+      freight,
+      address,
+      city,
+      country,
+      postalCode,
+      productId,
+      quantity,
+    } = data;
+
+    // Transaction block -!-
+    const client = await db.connect();
+
+    try {
+      await client.query("BEGIN");
+      console.log("Begin");
+
+      // Creates order -!-
+      const orderRes = await client.query(
+        `
+        INSERT INTO orders (customer_id, employee_id, order_date, required_date, freight, ship_address, ship_city, ship_country, ship_postal_code)
+        VALUES (
+          $1, $2, CURRENT_DATE, CURRENT_DATE + INTERVAL '7 days', $3, $4, $5, $6, $7
+        )
+        RETURNING *
+      `,
+        [customerId, employeeId, freight, address, city, country, postalCode],
+      );
+      const orderId = orderRes.rows[0].order_id;
+
+      // Extract price and units from product table -!-
+      const productRes = await client.query(
+        `
+        SELECT unit_price, units_in_stock
+        FROM products
+        WHERE product_id = $1
+        FOR UPDATE
+      `,
+        [productId],
+      );
+      const price = productRes.rows[0].unit_price;
+      const stock = productRes.rows[0].units_in_stock;
+
+      if (stock === null) throw new AppError(404, "Product not found!");
+      if (stock < quantity) throw new AppError(400, "Not enough stock");
+
+      // Creates order details after order creation -!-
+      await client.query(
+        `
+        INSERT INTO order_details (
+          order_id, product_id, unit_price, quantity, discount
+        ) VALUES (
+          $1, $2, $3, $4, $5
+        )
+      `,
+        [orderId, productId, price, quantity, 0],
+      );
+
+      await client.query(
+        `
+        UPDATE products
+        SET units_in_stock = units_in_stock - $1
+        WHERE product_id = $2
+      `,
+        [quantity, productId],
+      );
+
+      const sum = Math.ceil(quantity * price);
+
+      await client.query("COMMIT");
+
+      return {
+        orderId: orderRes.rows[0].order_id,
+        order: orderRes.rows[0],
+        pricePerUnit: price,
+        quantity: quantity,
+        totalPrice: sum,
+      };
+    } catch (error) {
+      await client.query("ROLLBACK");
+
+      throw new AppError(400, error.message);
+    } finally {
+      client.release();
+    }
+  };
+
+  // Read ===
   getAll = async (q) => {
-    // these variables are for pagination
+    // these variables are for pagination -!-
     const page = parseInt(q.page) || 1;
     const limit = parseInt(q.limit) || 10;
     const offset = (page - 1) * limit;
 
-    // this -Promise.all- returns the result of two DB queries, first for a list of orders with pagination, second for page counter
+    // this -Promise.all- returns the result of two DB queries, first for a list of orders with pagination, second for page counter -!-
     const [result, totItems] = await Promise.all([
       db.query(
         `
