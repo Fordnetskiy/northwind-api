@@ -36,7 +36,7 @@ class OrderService {
       );
       const orderId = orderRes.rows[0].order_id;
 
-      // Extract price and units from product table -!-
+      // Extract price and units from product table with pessimistic lock -!-
       const productRes = await client.query(
         `
         SELECT unit_price, units_in_stock
@@ -50,7 +50,6 @@ class OrderService {
       const stock = productRes.rows[0].units_in_stock;
 
       if (stock === null) throw new AppError(404, "Product not found!");
-      if (stock < quantity) throw new AppError(400, "Not enough stock");
 
       // Creates order details after order creation -!-
       await client.query(
@@ -64,21 +63,23 @@ class OrderService {
         [orderId, productId, price, quantity, 0],
       );
 
-      await client.query(
+      const res = await client.query(
         `
         UPDATE products
         SET units_in_stock = units_in_stock - $1
-        WHERE product_id = $2
+        WHERE product_id = $2 AND units_in_stock >= $1
+        RETURNING units_in_stock
       `,
         [quantity, productId],
       );
 
-      const sum = Math.ceil(quantity * price);
+      if (res.rowCount === 0) throw new AppError(404, "Not enough stock!");
+
+      const sum = Math.round(quantity * price);
 
       await client.query("COMMIT");
 
       return {
-        orderId: orderRes.rows[0].order_id,
         order: orderRes.rows[0],
         pricePerUnit: price,
         quantity: quantity,
