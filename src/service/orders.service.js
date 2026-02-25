@@ -162,6 +162,36 @@ class OrderService {
 
     return order.rows[0];
   };
+
+  update = async (data, id) => {
+    const {
+      requiredDate,
+      shipper,
+      address,
+      city,
+      region,
+      postalCode,
+      country,
+    } = data;
+
+    const updatedOrder = await db.query(
+      `
+      UPDATE orders 
+      SET required_date = $1, ship_via = $2, 
+          ship_address = $3, ship_city = $4,
+          ship_region = $5, ship_postal_code = $6,
+          ship_country = $7
+      WHERE order_id = $8
+      RETURNING *
+    `,
+      [requiredDate, shipper, address, city, region, postalCode, country, id],
+    );
+
+    if (updatedOrder.rowCount === 0)
+      throw new AppError(404, "Order not found/exists");
+
+    return updatedOrder.rows[0];
+  };
 }
 
 module.exports = new OrderService();

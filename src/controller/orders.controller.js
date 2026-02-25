@@ -42,6 +42,21 @@ class OrderController {
       next(error);
     }
   };
+
+  updateOrder = async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      const result = await OrderService.update(req.body, id);
+
+      res.status(200).json({
+        success: true,
+        message: "Order was updated",
+        order: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = new OrderController();
