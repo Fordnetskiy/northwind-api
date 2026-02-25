@@ -192,6 +192,74 @@ class OrderService {
 
     return updatedOrder.rows[0];
   };
+
+  delete = async (id) => {
+    const client = await db.connect();
+
+    // Transaction begins
+
+    try {
+      await client.query("BEGIN");
+
+      const orderDetails = await client.query(
+        `
+        SELECT product_id, quantity FROM order_details
+        WHERE order_id = $1
+        FOR UPDATE  
+      `,
+        [id],
+      );
+
+      if (orderDetails.rowCount === 0)
+        throw new AppError(404, "Order not found/exists");
+
+      const product = orderDetails.rows[0].product_id;
+      const quantity = orderDetails.rows[0].quantity;
+
+      // Deletes order details
+      await client.query(
+        `
+        DELETE FROM order_details
+        WHERE order_id = $1
+      `,
+        [id],
+      );
+
+      // Deletes order
+      await client.query(
+        `
+        DELETE FROM orders
+        WHERE order_id = $1
+      `,
+        [id],
+      );
+
+      // Restores units_in_stock for product after order deletion
+      for (const row of orderDetails.rows) {
+        await client.query(
+          `
+        UPDATE products
+        SET units_in_stock = units_in_stock + $1
+        WHERE product_id = $2
+      `,
+          [row.quantity, row.product],
+        );
+      }
+
+      await client.query("COMMIT");
+
+      return {
+        info: "Order was deleted!",
+      };
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    // Transaction ends
+  };
 }
 
 module.exports = new OrderService();

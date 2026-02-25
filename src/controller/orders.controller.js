@@ -57,6 +57,20 @@ class OrderController {
       next(error);
     }
   };
+
+  deleteOrder = async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      const result = await OrderService.delete(id);
+
+      res.status(200).json({
+        success: true,
+        ...result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = new OrderController();
