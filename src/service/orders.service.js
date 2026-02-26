@@ -8,6 +8,7 @@ class OrderService {
     const {
       customerId,
       employeeId,
+      shipper,
       freight,
       address,
       city,
@@ -23,16 +24,35 @@ class OrderService {
     try {
       await client.query("BEGIN");
 
+      const shipName = await client.query(
+        `
+        SELECT ship_name
+        FROM orders
+        WHERE customer_id = $1 AND ship_name IS NOT NULL
+      `,
+        [customerId],
+      );
+
       // Creates order -!-
       const orderRes = await client.query(
         `
-        INSERT INTO orders (customer_id, employee_id, order_date, required_date, freight, ship_address, ship_city, ship_country, ship_postal_code)
+        INSERT INTO orders (customer_id, employee_id, order_date, required_date, ship_via, freight, ship_name, ship_address, ship_city, ship_country, ship_postal_code)
         VALUES (
-          $1, $2, CURRENT_DATE, CURRENT_DATE + INTERVAL '7 days', $3, $4, $5, $6, $7
+          $1, $2, CURRENT_DATE, CURRENT_DATE + INTERVAL '7 days', $3, $4, $5, $6, $7, $8, $9
         )
         RETURNING *
       `,
-        [customerId, employeeId, freight, address, city, country, postalCode],
+        [
+          customerId,
+          employeeId,
+          shipper,
+          freight,
+          shipName.rows[0].ship_name,
+          address,
+          city,
+          country,
+          postalCode,
+        ],
       );
       const orderId = orderRes.rows[0].order_id;
 
@@ -105,12 +125,13 @@ class OrderService {
     const [result, totItems] = await Promise.all([
       db.query(
         `
-        SELECT order_id, customer_id, company_name AS customer_company,
-            CONCAT(first_name,  ' ', last_name) AS employee, order_date, required_date, shipped_date, 
-            freight, ship_address, ship_city, ship_country,ship_postal_code
+        SELECT order_id, customer_id, c.company_name AS customer_company,
+            CONCAT(first_name,  ' ', last_name) AS employee, order_date, required_date, shipped_date, s.company_name AS shipper,
+            freight, ship_address, ship_city, ship_country, ship_postal_code
         FROM orders
-        JOIN customers USING(customer_id)
+        JOIN customers c USING(customer_id)
         JOIN employees USING(employee_id)
+        JOIN shippers s ON s.shipper_id = orders.ship_via
         ORDER BY order_id
         OFFSET $1
         LIMIT $2
@@ -143,12 +164,13 @@ class OrderService {
   getOne = async (id) => {
     const order = await db.query(
       `
-      SELECT order_id, customer_id, company_name AS customer_company,
-            CONCAT(first_name,  ' ', last_name) AS employee, order_date, required_date, shipped_date, 
+      SELECT order_id, customer_id, c.company_name AS customer_company,
+            CONCAT(first_name,  ' ', last_name) AS employee, order_date, required_date, shipped_date, s.company_name AS shipper,
             freight, ship_address, ship_city, ship_country,ship_postal_code
       FROM orders
-      JOIN customers USING(customer_id)
+      JOIN customers c USING(customer_id)
       JOIN employees USING(employee_id)
+      JOIN shippers s ON s.shipper_id = orders.ship_via
       WHERE order_id = $1
     `,
       [id],
