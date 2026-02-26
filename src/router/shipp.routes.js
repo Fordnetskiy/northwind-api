@@ -12,4 +12,10 @@ router.post("/", validade(createShipperSchema), ShippController.createShipper);
 router.get("/", ShippController.getAll);
 router.get("/:id", ShippController.getOne);
 
+router.put(
+  "/:id",
+  validade(updateShipperSchema),
+  ShippController.updateShipper,
+);
+
 module.exports = router;

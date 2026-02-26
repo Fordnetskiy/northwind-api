@@ -88,6 +88,26 @@ class ShippService {
 
     return shipper.rows[0];
   };
+
+  update = async (id, data) => {
+    const { companyName, phone } = data;
+
+    const updatedShipper = await db.query(
+      `
+      UPDATE shippers
+      SET company_name = $1, phone = $2
+      WHERE shipper_id = $3
+      RETURNING *
+    `,
+      [companyName, phone, id],
+    );
+
+    if (updatedShipper.rowCount === 0) {
+      throw new AppError(404, "Shipper not found/exists!");
+    }
+
+    return updatedShipper.rows[0];
+  };
 }
 
 module.exports = new ShippService();

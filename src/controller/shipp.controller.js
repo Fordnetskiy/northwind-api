@@ -44,6 +44,21 @@ class ShippController {
       next(error);
     }
   };
+
+  updateShipper = async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      const result = await ShippService.update(id, req.body);
+
+      res.json({
+        success: true,
+        message: "Shipper credentials was updated!",
+        shipper: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = new ShippController();
