@@ -105,7 +105,7 @@ class OrderService {
     const [result, totItems] = await Promise.all([
       db.query(
         `
-        SELECT order_id, company_name AS customer,
+        SELECT order_id, customer_id, company_name AS customer_company,
             CONCAT(first_name,  ' ', last_name) AS employee, order_date, required_date, shipped_date, 
             freight, ship_address, ship_city, ship_country,ship_postal_code
         FROM orders
@@ -143,9 +143,9 @@ class OrderService {
   getOne = async (id) => {
     const order = await db.query(
       `
-      SELECT order_id, company_name AS customer,
-             CONCAT(first_name,  ' ', last_name) AS employee, order_date, required_date, shipped_date, 
-             freight, ship_address, ship_city, ship_country,ship_postal_code
+      SELECT order_id, customer_id, company_name AS customer_company,
+            CONCAT(first_name,  ' ', last_name) AS employee, order_date, required_date, shipped_date, 
+            freight, ship_address, ship_city, ship_country,ship_postal_code
       FROM orders
       JOIN customers USING(customer_id)
       JOIN employees USING(employee_id)
