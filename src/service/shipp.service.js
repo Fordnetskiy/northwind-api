@@ -128,6 +128,38 @@ class ShippService {
 
     return deletedShipper.rows[0];
   };
+
+  restore = async (id) => {
+    const existed = await db.query(
+      `
+      SELECT is_deleted
+      FROM shippers
+      WHERE shipper_id = $1 AND is_deleted = false
+      FOR UPDATE
+    `,
+      [id],
+    );
+
+    if (existed.rowCount !== 0) {
+      throw new AppError(400, "This shipper is not deleted!");
+    }
+
+    const restoredShipper = await db.query(
+      `
+      UPDATE shippers
+      SET is_deleted = false
+      WHERE shipper_id = $1
+      RETURNING *
+    `,
+      [id],
+    );
+
+    if (restoredShipper.rowCount === 0) {
+      throw new AppError(404, "Shipper not finded/exists");
+    }
+
+    return restoredShipper.rows[0];
+  };
 }
 
 module.exports = new ShippService();

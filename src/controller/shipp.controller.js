@@ -1,5 +1,4 @@
 const ShippService = require("../service/shipp.service");
-const AppError = require("../utils/AppError");
 
 class ShippController {
   createShipper = async (req, res, next) => {
@@ -69,6 +68,21 @@ class ShippController {
       res.json({
         success: true,
         message: "Shipper was deleted!",
+        shipper: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  restoreShipper = async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      const result = await ShippService.restore(id);
+
+      res.json({
+        success: true,
+        message: "Shipper was restored!",
         shipper: result,
       });
     } catch (error) {
