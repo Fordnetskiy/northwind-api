@@ -176,11 +176,7 @@ class OrderService {
       [id],
     );
 
-    if (order.rowCount === 0)
-      throw new AppError(
-        404,
-        "Order not found OR id must be between 10247 AND 11081",
-      );
+    if (order.rowCount === 0) throw new AppError(404, "Order not found/exists");
 
     return order.rows[0];
   };

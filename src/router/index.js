@@ -5,9 +5,9 @@ const supplierRoutes = require("./supp.routes");
 const orderRoutes = require("./orders.routes");
 const shipperRoutes = require("./shipp.routes");
 
-route.use("/orders", shipperRoutes);
+route.use("/orders", orderRoutes);
 route.use("/products", productRoutes);
 route.use("/suppliers", supplierRoutes);
-route.use("/shippers", orderRoutes);
+route.use("/shippers", shipperRoutes);
 
 module.exports = route;
