@@ -2,6 +2,49 @@ const db = require("../config/database");
 const AppError = require("../utils/AppError");
 
 class ShippService {
+  getAll = async (q) => {
+    // Pagination variables
+    const page = parseInt(q.page) || 1;
+    const limit = parseInt(q.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    // Returning all shippers and count from Promise.all[s, c]
+    const [shipRes, shipCount] = await Promise.all([
+      db.query(
+        `
+        SELECT * FROM shippers
+        ORDER BY shipper_id ASC
+        OFFSET $1
+        LIMIT $2
+      `,
+        [offset, limit],
+      ),
+      db.query(`
+        SELECT COUNT(*) FROM shippers
+      `),
+    ]);
+
+    const totalItems = parseInt(shipCount.rows[0].count);
+    const totalPages = Math.ceil(totalItems / limit);
+
+    if (page > totalPages) {
+      throw new AppError(
+        400,
+        `There is not much pages, only ${page} pages with limit ${limit}`,
+      );
+    }
+
+    return {
+      shippers: shipRes.rows,
+      pagiantion: {
+        page: page,
+        itemsPerPage: limit,
+        totalShippers: totalItems,
+        totalPages: totalPages,
+      },
+    };
+  };
+
   getOne = async (id) => {
     const shipper = await db.query(
       `
