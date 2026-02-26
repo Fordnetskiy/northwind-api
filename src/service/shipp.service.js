@@ -2,6 +2,35 @@ const db = require("../config/database");
 const AppError = require("../utils/AppError");
 
 class ShippService {
+  create = async (data) => {
+    const { companyName, phone } = data;
+
+    const nameCheck = await db.query(
+      `
+        SELECT company_name
+        FROM shippers
+        WHERE company_name = $1
+        FOR UPDATE
+      `,
+      [companyName],
+    );
+
+    if (nameCheck.rowCount !== 0) {
+      throw new AppError(400, "Shipper with this company name already exists!");
+    }
+
+    const newShipper = await db.query(
+      `
+      INSERT INTO shippers (company_name, phone)
+      VALUES ($1, $2)
+      RETURNING *
+    `,
+      [companyName, phone],
+    );
+
+    return newShipper.rows[0];
+  };
+
   getAll = async (q) => {
     // Pagination variables
     const page = parseInt(q.page) || 1;

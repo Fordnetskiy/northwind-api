@@ -2,6 +2,20 @@ const ShippService = require("../service/shipp.service");
 const AppError = require("../utils/AppError");
 
 class ShippController {
+  createShipper = async (req, res, next) => {
+    try {
+      const result = await ShippService.create(req.body);
+
+      res.status(201).json({
+        success: true,
+        message: "New shipper was created",
+        createdShipper: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   getAll = async (req, res, next) => {
     try {
       const result = await ShippService.getAll(req.query);
