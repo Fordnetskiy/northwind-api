@@ -22,7 +22,7 @@ class ShippController {
 
       res.json({
         success: true,
-        message: "Shippers was founded",
+        message: "Shippers was finded",
         ...result,
       });
     } catch (error) {
@@ -37,7 +37,7 @@ class ShippController {
 
       res.json({
         success: true,
-        message: "Shipper was found",
+        message: "Shipper was finded",
         shipper: result,
       });
     } catch (error) {
@@ -53,6 +53,22 @@ class ShippController {
       res.json({
         success: true,
         message: "Shipper credentials was updated!",
+        shipper: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  deleteShipper = async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+
+      const result = await ShippService.delete(id);
+
+      res.json({
+        success: true,
+        message: "Shipper was deleted!",
         shipper: result,
       });
     } catch (error) {

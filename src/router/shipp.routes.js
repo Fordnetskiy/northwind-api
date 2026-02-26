@@ -18,4 +18,6 @@ router.put(
   ShippController.updateShipper,
 );
 
+router.delete("/:id", ShippController.deleteShipper);
+
 module.exports = router;

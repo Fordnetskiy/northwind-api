@@ -42,6 +42,7 @@ class ShippService {
       db.query(
         `
         SELECT * FROM shippers
+        WHERE is_deleted = false
         ORDER BY shipper_id ASC
         OFFSET $1
         LIMIT $2
@@ -50,6 +51,7 @@ class ShippService {
       ),
       db.query(`
         SELECT COUNT(*) FROM shippers
+        WHERE is_deleted = false
       `),
     ]);
 
@@ -78,13 +80,13 @@ class ShippService {
     const shipper = await db.query(
       `
       SELECT * FROM shippers 
-      WHERE shipper_id = $1
+      WHERE shipper_id = $1 AND is_deleted = false
     `,
       [id],
     );
 
     if (shipper.rowCount === 0)
-      throw new AppError(404, "Shipper not found/exists");
+      throw new AppError(404, "Shipper not finded/exists");
 
     return shipper.rows[0];
   };
@@ -103,10 +105,28 @@ class ShippService {
     );
 
     if (updatedShipper.rowCount === 0) {
-      throw new AppError(404, "Shipper not found/exists!");
+      throw new AppError(404, "Shipper not finded/exists!");
     }
 
     return updatedShipper.rows[0];
+  };
+
+  delete = async (id) => {
+    const deletedShipper = await db.query(
+      `
+      UPDATE shippers
+      SET is_deleted = true
+      WHERE shipper_id = $1
+      RETURNING *
+    `,
+      [id],
+    );
+
+    if (deletedShipper.rowCount === 0) {
+      throw new AppError(404, "Shipper not finded/exists!");
+    }
+
+    return deletedShipper.rows[0];
   };
 }
 
