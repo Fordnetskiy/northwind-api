@@ -2,6 +2,21 @@ const db = require("../config/database");
 const AppError = require("../utils/AppError");
 
 class EmplService {
+  create = async (data) => {
+    const { firstName, lastName, courtesyTitle, title, city, country } = data;
+
+    const newEmployee = await db.query(
+      `
+          INSERT INTO employees (last_name, first_name, title, title_of_courtesy, city, country)
+          VALUES ($1, $2, $3, $4, $5, $6)
+          RETURNING *
+        `,
+      [lastName, firstName, title, courtesyTitle, city, country],
+    );
+
+    return newEmployee.rows[0];
+  };
+
   findAll = async (q) => {
     // Pagination variables
     const page = parseInt(q.page) || 1;

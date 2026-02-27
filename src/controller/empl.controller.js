@@ -1,6 +1,20 @@
 const EmplService = require("../service/empl.service");
 
 class EmplController {
+  createEmployee = async (req, res, next) => {
+    try {
+      const result = await EmplService.create(req.body);
+
+      res.status(201).json({
+        success: true,
+        message: "The new employer was created",
+        employer: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   getAll = async (req, res, next) => {
     try {
       const employersList = await EmplService.findAll(req.query);
