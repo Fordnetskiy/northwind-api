@@ -1,6 +1,21 @@
 const EmplService = require("../service/empl.service");
 
 class EmplController {
+  empOrders = async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      const result = await EmplService.empOrders(id, req.query);
+
+      res.status(200).json({
+        success: true,
+        message: "Orders of this employee was finded",
+        ...result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   createEmployee = async (req, res, next) => {
     try {
       const result = await EmplService.create(req.body);

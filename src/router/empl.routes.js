@@ -14,4 +14,7 @@ router.get("/:id", EmplController.getOne);
 router.put("/:id", validade(updateEmployee), EmplController.updateEmployee);
 router.delete("/:id", EmplController.deleteEmployee);
 
+// Statistics
+router.get("/:id/orders", EmplController.empOrders);
+
 module.exports = router;

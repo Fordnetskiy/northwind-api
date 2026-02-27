@@ -2,6 +2,57 @@ const db = require("../config/database");
 const AppError = require("../utils/AppError");
 
 class EmplService {
+  empOrders = async (id, q) => {
+    const page = parseInt(q.page) || 1;
+    const limit = parseInt(q.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    const [orders, orderCount] = await Promise.all([
+      db.query(
+        `
+      SELECT order_id, customer_id, c.company_name AS customer_company, CONCAT(first_name, ' ', last_name) AS     employee, order_date, required_date, shipped_date, freight, ship_city, ship_country, product_id, quantity
+      FROM orders
+      JOIN order_details USING(order_id)
+      JOIN employees USING(employee_id)
+      JOIN customers c USING(customer_id)
+      WHERE employee_id = $1
+      ORDER BY order_id DESC
+      OFFSET $2
+      LIMIT $3
+    `,
+        [id, offset, limit],
+      ),
+      db.query(
+        `
+        SELECT COUNT(*) FROM orders
+        WHERE employee_id = $1
+      `,
+        [id],
+      ),
+    ]);
+
+    if (orders.rowCount === 0) {
+      throw new AppError(404, "Not finded orders for this employer");
+    }
+
+    const totalItems = parseInt(orderCount.rows[0].count);
+    const totalPages = Math.ceil(totalItems / limit);
+
+    if (page > totalPages) {
+      throw new AppError(400, `There is ${page} pages with limit ${limit}`);
+    }
+
+    return {
+      orders: orders.rows,
+      pagiantion: {
+        page: page,
+        ordersPerPage: limit,
+        totalOrders: totalItems,
+        totalPages: totalPages,
+      },
+    };
+  };
+
   create = async (data) => {
     const { firstName, lastName, courtesyTitle, title, city, country } = data;
 
