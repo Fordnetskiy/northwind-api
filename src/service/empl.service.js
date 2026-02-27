@@ -29,6 +29,7 @@ class EmplService {
         SELECT employee_id AS id, CONCAT(title_of_courtesy, ' ', first_name, ' ', last_name) AS fullName,
             title, city, country, home_phone
         FROM employees
+        WHERE is_deleted = false
         OFFSET $1
         LIMIT $2
       `,
@@ -36,6 +37,7 @@ class EmplService {
       ),
       db.query(`
         SELECT COUNT(*) FROM employees
+        WHERE is_deleted = false
       `),
     ]);
 
@@ -70,7 +72,7 @@ class EmplService {
       SELECT employee_id AS id, CONCAT(title_of_courtesy, ' ', first_name, ' ', last_name) AS fullName,
             title, city, country, home_phone
       FROM employees
-      WHERE employee_id = $1
+      WHERE employee_id = $1 AND is_deleted = false
     `,
       [id],
     );
@@ -106,7 +108,7 @@ class EmplService {
       UPDATE employees SET last_name = $1, first_name = $2, title = $3, title_of_courtesy = $4,
             birth_date = $5, hire_date = $6, address = $7, city = $8, region = $9, postal_code = $10,
             country = $11, home_phone = $12, extension = $13, notes = $14, reports_to = $15
-      WHERE employee_id = $16
+      WHERE employee_id = $16 AND is_deleted = false
       RETURNING *
     `,
       [
@@ -134,6 +136,24 @@ class EmplService {
     }
 
     return updatedEmployer.rows[0];
+  };
+
+  delete = async (id) => {
+    const deletedEmployee = await db.query(
+      `
+      UPDATE employees
+      SET is_deleted = true
+      WHERE employee_id = $1 AND is_deleted = false
+      RETURNING employee_id
+    `,
+      [id],
+    );
+
+    if (deletedEmployee.rowCount === 0) {
+      throw new AppError(404, "Employer not exist");
+    }
+
+    return deletedEmployee.rows[0];
   };
 }
 

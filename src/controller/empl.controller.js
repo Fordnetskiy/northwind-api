@@ -59,6 +59,21 @@ class EmplController {
       next(error);
     }
   };
+
+  deleteEmployee = async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      const result = await EmplService.delete(id);
+
+      res.status(200).json({
+        success: true,
+        message: "Employer was deleted!",
+        employer: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = new EmplController();
