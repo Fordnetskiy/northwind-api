@@ -81,6 +81,60 @@ class EmplService {
 
     return result.rows[0];
   };
+
+  update = async (data, id) => {
+    const {
+      lastName,
+      firstName,
+      title,
+      courtesyTitle,
+      birthDate,
+      hireDate,
+      address,
+      city,
+      region,
+      postalCode,
+      country,
+      phone,
+      extension,
+      notes,
+      reportsTo,
+    } = data;
+
+    const updatedEmployer = await db.query(
+      `
+      UPDATE employees SET last_name = $1, first_name = $2, title = $3, title_of_courtesy = $4,
+            birth_date = $5, hire_date = $6, address = $7, city = $8, region = $9, postal_code = $10,
+            country = $11, home_phone = $12, extension = $13, notes = $14, reports_to = $15
+      WHERE employee_id = $16
+      RETURNING *
+    `,
+      [
+        lastName,
+        firstName,
+        title,
+        courtesyTitle,
+        birthDate,
+        hireDate,
+        address,
+        city,
+        region,
+        postalCode,
+        country,
+        phone,
+        extension,
+        notes,
+        reportsTo,
+        id,
+      ],
+    );
+
+    if (updatedEmployer.rowCount === 0) {
+      throw new AppError(404, "Employer not found/exist!");
+    }
+
+    return updatedEmployer.rows[0];
+  };
 }
 
 module.exports = new EmplService();

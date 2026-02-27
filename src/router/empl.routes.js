@@ -8,5 +8,6 @@ const EmplController = require("../controller/empl.controller");
 router.post("/", validade(createEmployee), EmplController.createEmployee);
 router.get("/", EmplController.getAll);
 router.get("/:id", EmplController.getOne);
+router.put("/:id", validade(updateEmployee), EmplController.updateEmployee);
 
 module.exports = router;

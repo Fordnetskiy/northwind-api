@@ -44,6 +44,21 @@ class EmplController {
       next(error);
     }
   };
+
+  updateEmployee = async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      const result = await EmplService.update(req.body, id);
+
+      res.status(200).json({
+        success: true,
+        message: "Employer credentials was updated",
+        employer: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = new EmplController();

@@ -22,7 +22,7 @@ const updateEmployee = Joi.object({
   postalCode: Joi.string(),
   country: Joi.string(),
   phone: Joi.string().max(15),
-  extention: Joi.number(),
+  extension: Joi.number(),
   notes: Joi.string().max(500),
   reportsTo: Joi.number(),
 });
