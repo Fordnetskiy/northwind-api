@@ -155,6 +155,24 @@ class EmplService {
 
     return deletedEmployee.rows[0];
   };
+
+  restore = async (id) => {
+    const restoredEmployer = await db.query(
+      `
+      UPDATE employees
+      SET is_deleted = false
+      WHERE employee_id = $1 AND is_deleted = true
+      RETURNING *
+    `,
+      [id],
+    );
+
+    if (restoredEmployer.rowCount === 0) {
+      throw new AppError(404, "Employer not found or not deleted");
+    }
+
+    return restoredEmployer.rows[0];
+  };
 }
 
 module.exports = new EmplService();

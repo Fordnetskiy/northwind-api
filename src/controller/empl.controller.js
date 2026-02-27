@@ -74,6 +74,22 @@ class EmplController {
       next(error);
     }
   };
+
+  restoreEmployee = async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+
+      const result = await EmplService.restore(id);
+
+      res.status(200).json({
+        success: true,
+        message: "Employer was restored",
+        employer: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = new EmplController();
