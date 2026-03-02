@@ -3,22 +3,26 @@ const AppError = require("../utils/AppError");
 
 class EmplService {
   empOrders = async (id, q) => {
-    const page = parseInt(q.page) || 1;
-    const limit = parseInt(q.limit) || 10;
+    // Pagination variables
+    const MAX_LIMIT = 50;
+
+    const page = Math.max(parseInt(q.page) || 1, 1); // if client`s value will be negative, 1
+    const clientLimit = Math.max(parseInt(q.limit) || 10, 10); // if client`s value will be negative, 10
+    const limit = Math.min(clientLimit, MAX_LIMIT);
     const offset = (page - 1) * limit;
 
-    const [orders, orderCount] = await Promise.all([
+    const [orders, orderCount, employeeExist] = await Promise.all([
       db.query(
         `
-      SELECT order_id, customer_id, c.company_name AS customer_company, CONCAT(first_name, ' ', last_name) AS     employee, order_date, required_date, shipped_date, freight, ship_city, ship_country, product_id, quantity
-      FROM orders
-      JOIN order_details USING(order_id)
-      JOIN employees USING(employee_id)
-      JOIN customers c USING(customer_id)
-      WHERE employee_id = $1
-      ORDER BY order_id DESC
+      SELECT o.order_id, o.customer_id, c.company_name AS customer_company, e.first_name || ' ' || e.last_name AS employee_name, o.order_date, o.required_date, o.shipped_date, o.freight, o.ship_city, o.ship_country, od.product_id, od.quantity
+      FROM orders o
+      JOIN order_details od ON od.order_id = o.order_id
+      JOIN employees e ON e.employee_id = o.employee_id
+      JOIN customers c ON c.customer_id = o.customer_id
+      WHERE o.employee_id = $1
+      ORDER BY o.order_id DESC
       OFFSET $2
-      LIMIT $3
+      LIMIT $3;
     `,
         [id, offset, limit],
       ),
@@ -29,17 +33,32 @@ class EmplService {
       `,
         [id],
       ),
+      db.query(
+        `
+        SELECT employee_id
+        FROM employees
+        WHERE employee_id = $1
+      `,
+        [id],
+      ),
     ]);
 
-    if (orders.rowCount === 0) {
-      throw new AppError(404, "Not finded orders for this employer");
+    if (employeeExist.rowCount === 0) {
+      throw new AppError(404, "Employee not found!");
     }
 
     const totalItems = parseInt(orderCount.rows[0].count);
     const totalPages = Math.ceil(totalItems / limit);
 
+    if (totalItems === 0) {
+      throw new AppError(200, "This employee hasn`t made any orders yet");
+    }
+
     if (page > totalPages) {
-      throw new AppError(400, `There is ${page} pages with limit ${limit}`);
+      throw new AppError(
+        400,
+        `Page ${page} not found. Total pages available: ${totalPages}`,
+      );
     }
 
     return {
