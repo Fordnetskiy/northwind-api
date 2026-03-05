@@ -63,11 +63,11 @@ class EmplService {
 
     return {
       orders: orders.rows,
-      pagiantion: {
-        page: page,
-        ordersPerPage: limit,
+      meta: {
         totalOrders: totalItems,
+        page: page,
         totalPages: totalPages,
+        ordersPerPage: limit,
       },
     };
   };
@@ -89,8 +89,11 @@ class EmplService {
 
   findAll = async (q) => {
     // Pagination variables
-    const page = parseInt(q.page) || 1;
-    const limit = parseInt(q.limit) || 10;
+    const MAX_LIMIT = 50;
+
+    const page = Math.max(parseInt(q.page) || 1, 1);
+    const clientLimit = Math.max(parseInt(q.limit) || 10, 10);
+    const limit = Math.min(clientLimit, MAX_LIMIT);
     const offset = (page - 1) * limit;
 
     const [empRes, empCount] = await Promise.all([
@@ -117,7 +120,7 @@ class EmplService {
     if (page > totalPages) {
       throw new AppError(
         400,
-        `There is ${page} pages with limit ${limit} only!`,
+        `Page ${page} not found. Total pages available: ${totalPages}`,
       );
     }
 
@@ -127,11 +130,11 @@ class EmplService {
 
     return {
       employersList: empRes.rows,
-      pagination: {
-        page: page,
-        itemsPerPage: limit,
+      meta: {
         totalEmployers: totalItems,
+        page: page,
         totalPages: totalPages,
+        itemsPerPage: limit,
       },
     };
   };
