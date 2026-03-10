@@ -3,6 +3,22 @@ const AppError = require("../utils/AppError");
 
 class CustService {
   #MAX_LIMIT = 50;
+
+  create = async (data) => {
+    const { customerId, companyName, contactName } = data;
+
+    const createdCustomer = await db.query(
+      `
+      INSERT INTO customers (customer_id, company_name, contact_name)
+      VALUES ($1, $2, $3)
+      RETURNING *
+    `,
+      [customerId, companyName, contactName],
+    );
+
+    return createdCustomer.rows[0];
+  };
+
   getAll = async (q) => {
     // Pagination variables
     const page = Math.max(parseInt(q.page) || 1, 1); // if client`s value will be negative, 1
