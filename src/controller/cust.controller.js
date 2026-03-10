@@ -48,6 +48,45 @@ class CustController {
       next(error);
     }
   };
+
+  updateCustomer = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+
+      const {
+        companyName,
+        contactName,
+        contactTitle,
+        address,
+        city,
+        region,
+        postalCode,
+        country,
+        phone,
+        fax,
+      } = req.body;
+
+      const result = await CustService.update(id, {
+        companyName,
+        contactName,
+        contactTitle,
+        address,
+        city,
+        region,
+        postalCode,
+        country,
+        phone,
+        fax,
+      });
+
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = new CustController();

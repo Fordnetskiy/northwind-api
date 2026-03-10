@@ -5,6 +5,7 @@ const {
   idValidation,
   queryValidation,
   createCustomerValidation,
+  updateCustomerValidation,
 } = require("../validation/cust.schema");
 
 const CustController = require("../controller/cust.controller");
@@ -14,7 +15,15 @@ router.post(
   validade(createCustomerValidation),
   CustController.createCustomer,
 );
+
 router.get("/", validade(queryValidation, "query"), CustController.getAll);
 router.get("/:id", validade(idValidation, "params"), CustController.getOne);
+
+router.put(
+  "/:id",
+  validade(idValidation, "params"),
+  validade(updateCustomerValidation),
+  CustController.updateCustomer,
+);
 
 module.exports = router;

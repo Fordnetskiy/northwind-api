@@ -82,6 +82,48 @@ class CustService {
 
     return customer.rows[0];
   };
+
+  update = async (id, data) => {
+    const {
+      companyName,
+      contactName,
+      contactTitle,
+      address,
+      city,
+      region,
+      postalCode,
+      country,
+      phone,
+      fax,
+    } = data;
+
+    const updatedCustomer = await db.query(
+      `
+      UPDATE customers SET company_name = $1, contact_name = $2, contact_title = $3, address = $4, city = $5, region = $6, postal_code = $7, country = $8, phone = $9, fax = $10
+      WHERE customer_id = $11
+      RETURNING *
+    `,
+      [
+        companyName,
+        contactName,
+        contactTitle,
+        address,
+        city,
+        region,
+        postalCode,
+        country,
+        phone,
+        fax,
+        id,
+      ],
+    );
+
+    if (updatedCustomer.rowCount === 0) {
+      throw new AppError(404, "Customer not found for update!");
+    }
+
+    return updatedCustomer.rows[0];
+  };
 }
 
 module.exports = new CustService();
