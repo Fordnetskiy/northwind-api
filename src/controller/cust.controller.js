@@ -1,6 +1,19 @@
 const CustService = require("../service/cust.service");
 
 class CustController {
+  getAll = async (req, res, next) => {
+    try {
+      const result = await CustService.getAll(req.query);
+
+      res.status(200).json({
+        success: true,
+        ...result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   getOne = async (req, res, next) => {
     try {
       const { id } = req.params;
@@ -8,7 +21,6 @@ class CustController {
 
       res.status(200).json({
         success: true,
-        message: "Get customer by ID",
         data: {
           customer: result,
         },
