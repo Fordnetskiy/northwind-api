@@ -1,6 +1,20 @@
 const CustService = require("../service/cust.service");
 
 class CustController {
+  restoreCustomer = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const result = await CustService.restore(id);
+
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   createCustomer = async (req, res, next) => {
     try {
       const { customerId, companyName, contactName } = req.body;

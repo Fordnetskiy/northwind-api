@@ -10,6 +10,12 @@ const {
 
 const CustController = require("../controller/cust.controller");
 
+router.patch(
+  "/restore/:id",
+  validade(idValidation, "params"),
+  CustController.restoreCustomer,
+);
+
 router.post(
   "/",
   validade(createCustomerValidation),

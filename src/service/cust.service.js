@@ -4,6 +4,23 @@ const AppError = require("../utils/AppError");
 class CustService {
   #MAX_LIMIT = 50;
 
+  restore = async (id) => {
+    const restored = await db.query(
+      `
+      UPDATE customers SET is_deleted = false
+      WHERE customer_id = $1 AND is_deleted = true
+      RETURNING customer_id, is_deleted
+    `,
+      [id],
+    );
+
+    if (restored.rowCount === 0) {
+      throw new AppError(404, "Customer not found, or not deleted");
+    }
+
+    return restored.rows[0];
+  };
+
   create = async (data) => {
     const { customerId, companyName, contactName } = data;
 
