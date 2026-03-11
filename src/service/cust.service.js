@@ -30,13 +30,14 @@ class CustService {
       db.query(
         `
         SELECT * FROM customers
+        WHERE is_deleted = false
         LIMIT $1
         OFFSET $2
       `,
         [limit, offset],
       ),
       db.query(`
-        SELECT COUNT(*) FROM customers
+        SELECT COUNT(*) FROM customers WHERE is_deleted = false
       `),
     ]);
 
@@ -71,7 +72,7 @@ class CustService {
     const customer = await db.query(
       `
       SELECT * FROM customers
-      WHERE customer_id = $1
+      WHERE customer_id = $1 AND is_deleted = false
     `,
       [customerId],
     );
@@ -100,7 +101,7 @@ class CustService {
     const updatedCustomer = await db.query(
       `
       UPDATE customers SET company_name = $1, contact_name = $2, contact_title = $3, address = $4, city = $5, region = $6, postal_code = $7, country = $8, phone = $9, fax = $10
-      WHERE customer_id = $11
+      WHERE customer_id = $11 AND is_deleted = false
       RETURNING *
     `,
       [
@@ -123,6 +124,23 @@ class CustService {
     }
 
     return updatedCustomer.rows[0];
+  };
+
+  delete = async (id) => {
+    const deleted = await db.query(
+      `
+      UPDATE customers SET is_deleted = true
+      WHERE customer_id = $1 AND is_deleted = false
+      RETURNING customer_id, is_deleted
+    `,
+      [id],
+    );
+
+    if (deleted.rowCount === 0) {
+      throw new AppError(404, "Customer not found");
+    }
+
+    return deleted.rows[0];
   };
 }
 

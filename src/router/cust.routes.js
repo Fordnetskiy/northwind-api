@@ -26,4 +26,10 @@ router.put(
   CustController.updateCustomer,
 );
 
+router.delete(
+  "/:id",
+  validade(idValidation, "params"),
+  CustController.deleteCustomer,
+);
+
 module.exports = router;
