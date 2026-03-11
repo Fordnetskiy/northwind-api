@@ -7,6 +7,14 @@ const app = express();
 
 app.use(express.json());
 app.use("/api/v1", routes);
+
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `Route: ${req.method} - ${req.baseUrl}${req.url} not found!`,
+  });
+});
+
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;

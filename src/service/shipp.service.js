@@ -66,12 +66,12 @@ class ShippService {
     }
 
     return {
-      shippers: shipRes.rows,
-      pagiantion: {
-        page: page,
-        itemsPerPage: limit,
-        totalShippers: totalItems,
-        totalPages: totalPages,
+      data: shipRes.rows,
+      meta: {
+        total: totalItems,
+        page,
+        totalPages,
+        limit,
       },
     };
   };

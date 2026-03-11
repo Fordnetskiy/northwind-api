@@ -5,11 +5,13 @@ const supplierRoutes = require("./supp.routes");
 const orderRoutes = require("./orders.routes");
 const shipperRoutes = require("./shipp.routes");
 const employeeRoutes = require("./empl.routes");
+const customerRoutes = require("./cust.routes");
 
 route.use("/orders", orderRoutes);
 route.use("/products", productRoutes);
 route.use("/employees", employeeRoutes);
 route.use("/suppliers", supplierRoutes);
 route.use("/shippers", shipperRoutes);
+route.use("/customers", customerRoutes);
 
 module.exports = route;

@@ -11,7 +11,7 @@ class ProdService {
              CEIL(AVG(unit_price)) AS average_price,
              SUM(unit_price) AS sum_of_prices
       FROM products
-      WHERE is_deleted = false
+      WHERE products.is_deleted = false
     `);
     return result.rows;
   };
@@ -45,7 +45,7 @@ class ProdService {
         FROM products
         JOIN categories USING(category_id)
         JOIN suppliers USING(supplier_id)
-        WHERE is_deleted = false
+        WHERE products.is_deleted = false
         ORDER BY product_id
         OFFSET $1
         LIMIT $2
@@ -55,7 +55,7 @@ class ProdService {
       db.query(`
         SELECT COUNT(*)
         FROM products
-        WHERE is_deleted = false
+        WHERE products.is_deleted = false
       `),
     ]);
 
@@ -66,12 +66,12 @@ class ProdService {
       throw new AppError(400, `There is ${totalPages} pages only, not more`);
 
     return {
-      products: prodRes.rows,
-      pagination: {
-        total_items: totalItems,
-        total_pages: totalPages,
-        current_page: page,
-        items_per_page: limit,
+      data: prodRes.rows,
+      meta: {
+        total: totalItems,
+        page,
+        totalPages,
+        limit,
       },
     };
   };
@@ -83,7 +83,7 @@ class ProdService {
         FROM products
         JOIN categories USING(category_id)
         JOIN suppliers USING(supplier_id)
-        WHERE product_id = $1 AND is_deleted = false
+        WHERE product_id = $1 AND products.is_deleted = false
         `,
       [id],
     );
@@ -115,7 +115,7 @@ class ProdService {
     const result = await db.query(
       `
       UPDATE products
-      SET is_deleted = true
+      SET products.is_deleted = true
       WHERE product_id = $1
       RETURNING *
     `,
