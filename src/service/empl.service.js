@@ -62,12 +62,12 @@ class EmplService {
     }
 
     return {
-      orders: orders.rows,
+      data: orders.rows,
       meta: {
-        totalOrders: totalItems,
-        page: page,
+        total: totalItems,
+        page,
         totalPages: totalPages,
-        ordersPerPage: limit,
+        limit,
       },
     };
   };
@@ -129,12 +129,12 @@ class EmplService {
     }
 
     return {
-      employersList: empRes.rows,
+      data: empRes.rows,
       meta: {
-        totalEmployers: totalItems,
-        page: page,
+        total: totalItems,
+        page,
         totalPages: totalPages,
-        itemsPerPage: limit,
+        limit,
       },
     };
   };

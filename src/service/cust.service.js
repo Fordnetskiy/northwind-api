@@ -59,7 +59,7 @@ class CustService {
       meta: {
         total: totalItems,
         page,
-        total_pages: totalPages,
+        totalPages,
         limit,
       },
     };

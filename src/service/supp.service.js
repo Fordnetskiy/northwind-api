@@ -73,12 +73,12 @@ class SuppService {
       throw new AppError(400, `There is ${totalPages} pages only, not more`);
 
     return {
-      suppliers: supRes.rows,
-      pagination: {
-        total_items: totalItems,
-        total_pages: totalPages,
-        current_page: page,
-        items_per_page: limit,
+      data: supRes.rows,
+      meta: {
+        total: totalItems,
+        page,
+        totalPages,
+        limit,
       },
     };
   };
@@ -155,7 +155,7 @@ class SuppService {
       [id],
     );
 
-    return deletedItem;
+    return deletedItem.rows[0];
   };
 
   restore = async (id) => {

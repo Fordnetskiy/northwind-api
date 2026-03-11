@@ -100,9 +100,9 @@ class OrderService {
       await client.query("COMMIT");
 
       return {
-        order: orderRes.rows[0],
-        pricePerUnit: price,
-        quantity: quantity,
+        data: orderRes.rows[0],
+        price,
+        quantity,
         totalPrice: sum,
       };
     } catch (error) {
@@ -151,12 +151,12 @@ class OrderService {
       throw new AppError(400, `There is ${totalPages} pages only, not more`);
 
     return {
-      orders: result.rows,
-      pagiantion: {
-        total_items: totalItems,
-        total_pages: totalPages,
-        current_page: page,
-        items_per_page: limit,
+      data: result.rows,
+      meta: {
+        total: totalItems,
+        page,
+        totalPages,
+        limit,
       },
     };
   };
@@ -267,7 +267,7 @@ class OrderService {
       await client.query("COMMIT");
 
       return {
-        info: "Order was deleted!",
+        message: "Order was deleted!",
       };
     } catch (error) {
       await client.query("ROLLBACK");
