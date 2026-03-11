@@ -10,6 +10,7 @@ const {
 
 const CustController = require("../controller/cust.controller");
 
+router.get("/deleted", CustController.getDeleted);
 router.patch(
   "/restore/:id",
   validade(idValidation, "params"),

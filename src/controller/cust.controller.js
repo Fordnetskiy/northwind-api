@@ -115,6 +115,19 @@ class CustController {
       next(error);
     }
   };
+
+  getDeleted = async (req, res, next) => {
+    try {
+      const result = await CustService.getDeleted();
+
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = new CustController();

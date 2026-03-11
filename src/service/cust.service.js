@@ -159,6 +159,19 @@ class CustService {
 
     return deleted.rows[0];
   };
+
+  getDeleted = async () => {
+    const deletedList = await db.query(`
+      SELECT * FROM customers
+      WHERE is_deleted = true
+    `);
+
+    if (deletedList.rowCount === 0) {
+      throw new AppError(404, "No one is deleted for this moment");
+    }
+
+    return deletedList.rows;
+  };
 }
 
 module.exports = new CustService();
