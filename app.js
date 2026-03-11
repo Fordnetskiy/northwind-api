@@ -1,5 +1,6 @@
+require("dotenv").config();
+
 const express = require("express");
-const dotenv = require("dotenv").config();
 const routes = require("./src/router/index");
 const errorHandler = require("./src/middlewares/gErrHandler");
 

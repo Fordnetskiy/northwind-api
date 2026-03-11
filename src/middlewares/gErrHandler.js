@@ -3,8 +3,8 @@ const errorHandler = (err, req, res, next) => {
   const message = err.message || "Internal Server Error";
   res.status(status).json({
     success: false,
-    message: message,
-    full_message: err.stack,
+    message,
+    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
   });
 };
 
