@@ -78,13 +78,13 @@ class ProdService {
   };
 
   getOne = async (id) => {
-    const result = db.query(
+    const result = await db.query(
       `
-        SELECT category_name, product_id, product_name, unit_price, units_in_stock, company_name
-        FROM products
-        JOIN categories USING(category_id)
-        JOIN suppliers USING(supplier_id)
-        WHERE product_id = $1 AND products.is_deleted = false
+        SELECT c.category_name, p.product_id, p.product_name, p.unit_price, p.units_in_stock, s.company_name
+        FROM products p
+        JOIN categories c ON c.category_id = p.category_id
+        JOIN suppliers s ON s.supplier_id = p.supplier_id
+        WHERE p.product_id = $1 AND p.is_deleted = false
         `,
       [id],
     );
