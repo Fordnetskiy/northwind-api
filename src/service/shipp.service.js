@@ -85,8 +85,9 @@ class ShippService {
       [id],
     );
 
-    if (shipper.rowCount === 0)
+    if (shipper.rowCount === 0) {
       throw new AppError(404, "Shipper not finded/exists");
+    }
 
     return shipper.rows[0];
   };
