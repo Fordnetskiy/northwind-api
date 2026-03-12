@@ -1,24 +1,39 @@
 const { Router } = require("express");
 const router = Router();
-const validade = require("../middlewares/validate");
+const validate = require("../middlewares/validate");
 const {
   createShipperSchema,
   updateShipperSchema,
 } = require("../validation/shipp.schema");
+const { numericIdValidation } = require("../validation/shared.schema");
 const ShippController = require("../controller/shipp.controller");
 
-// Other routes
-router.post("/restore/:id", ShippController.restoreShipper);
+router.patch(
+  "/restore/:id",
+  validate(numericIdValidation, "params"),
+  ShippController.restoreShipper,
+);
 
-// CRUD routes
-router.post("/", validade(createShipperSchema), ShippController.createShipper);
+router.post("/", validate(createShipperSchema), ShippController.createShipper);
+
 router.get("/", ShippController.getAll);
-router.get("/:id", ShippController.getOne);
+router.get(
+  "/:id",
+  validate(numericIdValidation, "params"),
+  ShippController.getOne,
+);
+
 router.put(
   "/:id",
-  validade(updateShipperSchema),
+  validate(numericIdValidation, "params"),
+  validate(updateShipperSchema),
   ShippController.updateShipper,
 );
-router.delete("/:id", ShippController.deleteShipper);
+
+router.delete(
+  "/:id",
+  validate(numericIdValidation, "params"),
+  ShippController.deleteShipper,
+);
 
 module.exports = router;

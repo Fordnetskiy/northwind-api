@@ -1,20 +1,43 @@
 const { Router } = require("express");
 const router = Router();
-const validade = require("../middlewares/validate");
+const validate = require("../middlewares/validate");
 const { createEmployee, updateEmployee } = require("../validation/empl.schema");
+const { numericIdValidation } = require("../validation/shared.schema");
 const EmplController = require("../controller/empl.controller");
 
-// Specific routes
-router.post("/restore/:id", EmplController.restoreEmployee);
+router.post(
+  "/restore/:id",
+  validate(numericIdValidation, "params"),
+  EmplController.restoreEmployee,
+);
 
-// CRUD routes
-router.post("/", validade(createEmployee), EmplController.createEmployee);
+router.post("/", validate(createEmployee), EmplController.createEmployee);
+
 router.get("/", EmplController.getAll);
-router.get("/:id", EmplController.getOne);
-router.put("/:id", validade(updateEmployee), EmplController.updateEmployee);
-router.delete("/:id", EmplController.deleteEmployee);
+router.get(
+  "/:id",
+  validate(numericIdValidation, "params"),
+  EmplController.getOne,
+);
+
+router.put(
+  "/:id",
+  validate(numericIdValidation, "params"),
+  validate(updateEmployee),
+  EmplController.updateEmployee,
+);
+
+router.delete(
+  "/:id",
+  validate(numericIdValidation, "params"),
+  EmplController.deleteEmployee,
+);
 
 // Statistics
-router.get("/:id/orders", EmplController.empOrders);
+router.get(
+  "/:id/orders",
+  validate(numericIdValidation, "params"),
+  EmplController.empOrders,
+);
 
 module.exports = router;

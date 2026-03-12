@@ -1,34 +1,35 @@
 const { Router } = require("express");
 const router = Router();
-
 const {
   createProdSchema,
   updateProdSchema,
 } = require("../validation/prod.schema");
+const { numericIdValidation } = require("../validation/shared.schema");
 const validate = require("../middlewares/validate");
-
 const ProdController = require("../controller/prod.controller");
 
-// Statistic routes ===
 router.get("/stats", ProdController.stats);
 
-// ===
-
-// C.R.U.D routes ===
-
-// Create
 router.post("/", validate(createProdSchema), ProdController.createOne);
 
-// Read
 router.get("/", ProdController.getAll);
-router.get("/:id", ProdController.getOne);
+router.get(
+  "/:id",
+  validate(numericIdValidation, "params"),
+  ProdController.getOne,
+);
 
-// Update
-router.put("/:id", validate(updateProdSchema), ProdController.update);
+router.put(
+  "/:id",
+  validate(numericIdValidation, "params"),
+  validate(updateProdSchema),
+  ProdController.update,
+);
 
-// Delete
-router.delete("/:id", ProdController.delete);
-
-// ===
+router.delete(
+  "/:id",
+  validate(numericIdValidation, "params"),
+  ProdController.delete,
+);
 
 module.exports = router;
