@@ -69,8 +69,9 @@ class SuppService {
     const totalItems = parseInt(supCount.rows[0].count);
     const totalPages = Math.ceil(totalItems / limit);
 
-    if (page > totalPages)
+    if (page > totalPages) {
       throw new AppError(400, `There is ${totalPages} pages only, not more`);
+    }
 
     return {
       data: supRes.rows,
@@ -93,7 +94,9 @@ class SuppService {
       [id],
     );
 
-    if (result.rowCount === 0) throw new AppError(404, "Supplier not found!");
+    if (result.rowCount === 0) {
+      throw new AppError(404, "Supplier not found!");
+    }
 
     return result.rows[0];
   };
@@ -139,8 +142,9 @@ class SuppService {
       ],
     );
 
-    if (updatedItem.rowCount === 0)
+    if (updatedItem.rowCount === 0) {
       throw new AppError(404, "Supplier not exists");
+    }
 
     return updatedItem.rows[0];
   };
@@ -159,30 +163,19 @@ class SuppService {
   };
 
   restore = async (id) => {
-    const isDeleted = await db.query(
-      `
-        SELECT supplier_id, is_deleted
-        FROM suppliers
-        WHERE supplier_id = $1
-      `,
-      [id],
-    );
-
-    if (isDeleted.rowCount === 0)
-      throw new AppError(404, "Supplier not found!");
-
-    if (isDeleted.rows[0].is_deleted === false)
-      throw new AppError(400, "Cannot restore the existing supplier!");
-
     const restored = await db.query(
       `
       UPDATE suppliers
       SET is_deleted = false
-      WHERE supplier_id = $1
-      RETURNING *
+      WHERE supplier_id = $1 AND is_deleted = true
+      RETURNING supplier_id, is_deleted
     `,
       [id],
     );
+
+    if (restored.rowCount === 0) {
+      throw new AppError(404, "Supplier not found!");
+    }
 
     return restored.rows[0];
   };
