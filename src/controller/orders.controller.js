@@ -20,7 +20,7 @@ class OrderController {
       const result = await OrderService.getAll(req.query);
 
       res.status(200).json({
-        message: "Success",
+        success: true,
         ...result,
       });
     } catch (error) {
@@ -36,7 +36,7 @@ class OrderController {
 
       res.status(200).json({
         success: true,
-        order: result,
+        data: result,
       });
     } catch (error) {
       next(error);
@@ -50,8 +50,7 @@ class OrderController {
 
       res.status(200).json({
         success: true,
-        message: "Order was updated",
-        order: result,
+        data: result,
       });
     } catch (error) {
       next(error);
