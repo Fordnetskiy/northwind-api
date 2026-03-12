@@ -8,7 +8,6 @@ class EmplController {
 
       res.status(200).json({
         success: true,
-        message: "Orders of this employee was finded",
         ...result,
       });
     } catch (error) {
@@ -22,8 +21,7 @@ class EmplController {
 
       res.status(201).json({
         success: true,
-        message: "The new employer was created",
-        employer: result,
+        data: result,
       });
     } catch (error) {
       next(error);
@@ -36,7 +34,6 @@ class EmplController {
 
       res.status(200).json({
         success: true,
-        message: "Employees was finded",
         ...employersList,
       });
     } catch (error) {
@@ -52,8 +49,7 @@ class EmplController {
 
       res.status(200).json({
         success: true,
-        message: "Employer was finded!",
-        employer: employee,
+        data: employee,
       });
     } catch (error) {
       next(error);
@@ -67,8 +63,7 @@ class EmplController {
 
       res.status(200).json({
         success: true,
-        message: "Employer credentials was updated",
-        employer: result,
+        data: result,
       });
     } catch (error) {
       next(error);
@@ -82,8 +77,7 @@ class EmplController {
 
       res.status(200).json({
         success: true,
-        message: "Employer was deleted!",
-        employer: result,
+        data: result,
       });
     } catch (error) {
       next(error);
@@ -98,8 +92,7 @@ class EmplController {
 
       res.status(200).json({
         success: true,
-        message: "Employer was restored",
-        employer: result,
+        data: result,
       });
     } catch (error) {
       next(error);
