@@ -62,8 +62,9 @@ class ProdService {
     const totalItems = parseInt(countRes.rows[0].count - 1);
     const totalPages = Math.ceil(totalItems / limit);
 
-    if (page > totalPages)
+    if (page > totalPages) {
       throw new AppError(400, `There is ${totalPages} pages only, not more`);
+    }
 
     return {
       data: prodRes.rows,
@@ -88,7 +89,11 @@ class ProdService {
       [id],
     );
 
-    return result;
+    if (result.rowCount === 0) {
+      throw new AppError(404, "Product not exists");
+    }
+
+    return result.rows[0];
   };
 
   // Update
@@ -105,7 +110,9 @@ class ProdService {
       [productName, supplierId, categoryId, unitPrice, unitsInStock, id],
     );
 
-    if (result.rowCount === 0) throw new AppError(404, "Product not found");
+    if (result.rowCount === 0) {
+      throw new AppError(404, "Product not found");
+    }
 
     return result.rows[0];
   };
@@ -121,6 +128,11 @@ class ProdService {
     `,
       [id],
     );
+
+    if (result.rowCount === 0) {
+      throw new AppError(404, "Product not exists!");
+    }
+
     return result.rows[0];
   };
 }
