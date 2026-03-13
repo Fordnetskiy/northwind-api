@@ -159,6 +159,10 @@ class SuppService {
       [id],
     );
 
+    if (deletedItem.rowCount === 0) {
+      throw new AppError(404, "Supplier not found");
+    }
+
     return deletedItem.rows[0];
   };
 

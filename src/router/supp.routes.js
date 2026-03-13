@@ -24,16 +24,16 @@ router.put(
   SuppController.updateOne,
 );
 
-router.delete(
-  "/:id",
-  validate(numericIdValidation, "params"),
-  SuppController.delete,
-);
-
 router.patch(
   "/restore/:id",
   validate(numericIdValidation, "params"),
   SuppController.restore,
+);
+
+router.delete(
+  "/:id",
+  validate(numericIdValidation, "params"),
+  SuppController.delete,
 );
 
 module.exports = router;
