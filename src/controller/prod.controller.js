@@ -64,7 +64,7 @@ class ProdController {
       const result = await ProdService.update(req.body, id);
 
       res.status(200).json({
-        succes: true,
+        success: true,
         data: result,
       });
     } catch (error) {
