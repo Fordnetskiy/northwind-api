@@ -54,9 +54,7 @@ class CustController {
 
       res.status(200).json({
         success: true,
-        data: {
-          customer: result,
-        },
+        data: result,
       });
     } catch (error) {
       next(error);
