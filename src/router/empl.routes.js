@@ -1,9 +1,13 @@
+// Variables
+
 const { Router } = require("express");
 const router = Router();
 const validate = require("../middlewares/validate");
 const { createEmployee, updateEmployee } = require("../validation/empl.schema");
 const { numericIdValidation } = require("../validation/shared.schema");
 const EmplController = require("../controller/empl.controller");
+
+// Routes
 
 router.post(
   "/restore/:id",
@@ -33,7 +37,6 @@ router.delete(
   EmplController.deleteEmployee,
 );
 
-// Statistics
 router.get(
   "/:id/orders",
   validate(numericIdValidation, "params"),

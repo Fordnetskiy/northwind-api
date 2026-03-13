@@ -90,7 +90,7 @@ class ProdService {
     );
 
     if (result.rowCount === 0) {
-      throw new AppError(404, "Product not exists");
+      throw new AppError(404, "Product not found");
     }
 
     return result.rows[0];

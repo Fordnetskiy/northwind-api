@@ -1,3 +1,5 @@
+// Variables
+
 const { Router } = require("express");
 const router = Router();
 const {
@@ -7,6 +9,8 @@ const {
 const { numericIdValidation } = require("../validation/shared.schema");
 const validate = require("../middlewares/validate");
 const ProdController = require("../controller/prod.controller");
+
+// Routes
 
 router.get("/stats", ProdController.stats);
 

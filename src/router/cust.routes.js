@@ -1,3 +1,5 @@
+// Variables
+
 const { Router } = require("express");
 const router = Router();
 const validade = require("../middlewares/validate");
@@ -7,8 +9,9 @@ const {
   createCustomerValidation,
   updateCustomerValidation,
 } = require("../validation/cust.schema");
-
 const CustController = require("../controller/cust.controller");
+
+// Routes
 
 router.get("/deleted", CustController.getDeleted);
 router.patch(

@@ -151,7 +151,7 @@ class EmplService {
     );
 
     if (result.rowCount === 0) {
-      throw new AppError(404, "Employee not finded/exist");
+      throw new AppError(404, "Employee not found / exist");
     }
 
     return result.rows[0];
@@ -205,7 +205,7 @@ class EmplService {
     );
 
     if (updatedEmployer.rowCount === 0) {
-      throw new AppError(404, "Employee not found/exist!");
+      throw new AppError(404, "Employee not found / exist!");
     }
 
     return updatedEmployer.rows[0];

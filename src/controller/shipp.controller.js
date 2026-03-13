@@ -58,7 +58,6 @@ class ShippController {
   deleteShipper = async (req, res, next) => {
     try {
       const id = parseInt(req.params.id);
-
       const result = await ShippService.delete(id);
 
       res.json({

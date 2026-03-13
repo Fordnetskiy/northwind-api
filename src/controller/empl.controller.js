@@ -30,11 +30,11 @@ class EmplController {
 
   getAll = async (req, res, next) => {
     try {
-      const employersList = await EmplService.findAll(req.query);
+      const result = await EmplService.findAll(req.query);
 
       res.status(200).json({
         success: true,
-        ...employersList,
+        ...result,
       });
     } catch (error) {
       next(error);
@@ -45,11 +45,11 @@ class EmplController {
     try {
       const id = parseInt(req.params.id);
 
-      const employee = await EmplService.findById(id);
+      const result = await EmplService.findById(id);
 
       res.status(200).json({
         success: true,
-        data: employee,
+        data: result,
       });
     } catch (error) {
       next(error);
@@ -87,7 +87,6 @@ class EmplController {
   restoreEmployee = async (req, res, next) => {
     try {
       const id = parseInt(req.params.id);
-
       const result = await EmplService.restore(id);
 
       res.status(200).json({

@@ -1,5 +1,4 @@
 const ProdService = require("../service/prod.service");
-const AppError = require("../utils/AppError");
 
 class ProdController {
   // Statistics

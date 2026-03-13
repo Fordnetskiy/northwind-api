@@ -1,3 +1,5 @@
+// Variables
+
 const { Router } = require("express");
 const router = Router();
 const validate = require("../middlewares/validate");
@@ -7,6 +9,8 @@ const {
 } = require("../validation/shipp.schema");
 const { numericIdValidation } = require("../validation/shared.schema");
 const ShippController = require("../controller/shipp.controller");
+
+// Routes
 
 router.patch(
   "/restore/:id",

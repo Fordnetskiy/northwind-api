@@ -86,7 +86,7 @@ class ShippService {
     );
 
     if (shipper.rowCount === 0) {
-      throw new AppError(404, "Shipper not finded/exists");
+      throw new AppError(404, "Shipper not found / exists!");
     }
 
     return shipper.rows[0];
@@ -106,7 +106,7 @@ class ShippService {
     );
 
     if (updatedShipper.rowCount === 0) {
-      throw new AppError(404, "Shipper not finded/exists!");
+      throw new AppError(404, "Shipper not found / exists!");
     }
 
     return updatedShipper.rows[0];
@@ -124,7 +124,7 @@ class ShippService {
     );
 
     if (deletedShipper.rowCount === 0) {
-      throw new AppError(404, "Shipper not finded/exists!");
+      throw new AppError(404, "Shipper not found / exists!");
     }
 
     return deletedShipper.rows[0];
@@ -156,7 +156,7 @@ class ShippService {
     );
 
     if (restoredShipper.rowCount === 0) {
-      throw new AppError(404, "Shipper not finded/exists");
+      throw new AppError(404, "Shipper not found / exists!");
     }
 
     return restoredShipper.rows[0];
