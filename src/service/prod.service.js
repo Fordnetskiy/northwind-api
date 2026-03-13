@@ -59,7 +59,7 @@ class ProdService {
       `),
     ]);
 
-    const totalItems = parseInt(countRes.rows[0].count - 1);
+    const totalItems = parseInt(countRes.rows[0].count);
     const totalPages = Math.ceil(totalItems / limit);
 
     if (page > totalPages) {
