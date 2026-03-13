@@ -154,7 +154,7 @@ class SuppService {
       `
       UPDATE suppliers
       SET is_deleted = true
-      WHERE supplier_id = $1
+      WHERE supplier_id = $1 AND is_deleted = false
     `,
       [id],
     );
