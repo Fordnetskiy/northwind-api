@@ -6,6 +6,7 @@ const options = {
     openapi: "3.0.0",
     info: {
       title: "Northwind API",
+      description: "REST API for Northwind DB",
       version: "1.1.0",
     },
   },
