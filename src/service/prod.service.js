@@ -122,7 +122,7 @@ class ProdService {
     const result = await db.query(
       `
       UPDATE products
-      SET products.is_deleted = true
+      SET is_deleted = true
       WHERE product_id = $1
       RETURNING *
     `,
