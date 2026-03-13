@@ -260,7 +260,7 @@ class OrderService {
         SET units_in_stock = units_in_stock + $1
         WHERE product_id = $2
       `,
-          [row.quantity, row.product],
+          [row.quantity, row.product_id],
         );
       }
 
