@@ -1,14 +1,13 @@
 const OrderService = require("../service/orders.service");
-const AppError = require("../utils/AppError");
 
 class OrderController {
   create = async (req, res, next) => {
     try {
-      const newOrder = await OrderService.create(req.body);
+      const result = await OrderService.create(req.body);
 
       res.status(201).json({
         success: true,
-        ...newOrder,
+        ...result,
       });
     } catch (error) {
       next(error);
@@ -20,7 +19,7 @@ class OrderController {
       const result = await OrderService.getAll(req.query);
 
       res.status(200).json({
-        message: "Success",
+        success: true,
         ...result,
       });
     } catch (error) {
@@ -31,12 +30,11 @@ class OrderController {
   getOne = async (req, res, next) => {
     try {
       const id = parseInt(req.params.id);
-
       const result = await OrderService.getOne(id);
 
       res.status(200).json({
         success: true,
-        order: result,
+        data: result,
       });
     } catch (error) {
       next(error);
@@ -50,8 +48,7 @@ class OrderController {
 
       res.status(200).json({
         success: true,
-        message: "Order was updated",
-        order: result,
+        data: result,
       });
     } catch (error) {
       next(error);

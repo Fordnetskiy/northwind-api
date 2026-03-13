@@ -3,12 +3,16 @@ const express = require("express");
 const morgan = require("./src/middlewares/morgan");
 const logger = require("./src/config/logger");
 const routes = require("./src/router/index");
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./src/config/swagger");
 const errorHandler = require("./src/middlewares/gErrHandler");
 
 const app = express();
 
 app.use(morgan);
 app.use(express.json());
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api/v1", routes);
 
 app.use((req, res) => {

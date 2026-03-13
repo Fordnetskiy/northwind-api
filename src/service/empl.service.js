@@ -51,7 +51,7 @@ class EmplService {
     const totalPages = Math.ceil(totalItems / limit);
 
     if (totalItems === 0) {
-      throw new AppError(200, "This employee hasn`t made any orders yet");
+      throw new AppError(404, "This employee hasn`t made any orders yet");
     }
 
     if (page > totalPages) {
@@ -125,7 +125,7 @@ class EmplService {
     }
 
     if (empRes.rowCount === 0) {
-      throw new AppError(404, "Employers list are empty!");
+      throw new AppError(404, "Employee list are empty!");
     }
 
     return {
@@ -151,7 +151,7 @@ class EmplService {
     );
 
     if (result.rowCount === 0) {
-      throw new AppError(404, "Employer not finded/exist");
+      throw new AppError(404, "Employee not found / exist");
     }
 
     return result.rows[0];
@@ -205,7 +205,7 @@ class EmplService {
     );
 
     if (updatedEmployer.rowCount === 0) {
-      throw new AppError(404, "Employer not found/exist!");
+      throw new AppError(404, "Employee not found / exist!");
     }
 
     return updatedEmployer.rows[0];
@@ -223,7 +223,7 @@ class EmplService {
     );
 
     if (deletedEmployee.rowCount === 0) {
-      throw new AppError(404, "Employer not exist");
+      throw new AppError(404, "Employee not exist");
     }
 
     return deletedEmployee.rows[0];
@@ -241,7 +241,7 @@ class EmplService {
     );
 
     if (restoredEmployer.rowCount === 0) {
-      throw new AppError(404, "Employer not found or not deleted");
+      throw new AppError(404, "Employee not found or not deleted");
     }
 
     return restoredEmployer.rows[0];

@@ -69,7 +69,9 @@ class OrderService {
       const price = productRes.rows[0].unit_price;
       const stock = productRes.rows[0].units_in_stock;
 
-      if (stock === null) throw new AppError(404, "Product not found!");
+      if (stock === null) {
+        throw new AppError(404, "Product not found!");
+      }
 
       // Creates order details after order creation -!-
       await client.query(
@@ -93,7 +95,9 @@ class OrderService {
         [quantity, productId],
       );
 
-      if (res.rowCount === 0) throw new AppError(404, "Not enough stock!");
+      if (res.rowCount === 0) {
+        throw new AppError(404, "Not enough stock!");
+      }
 
       const sum = Math.round(quantity * price);
 
@@ -107,7 +111,6 @@ class OrderService {
       };
     } catch (error) {
       await client.query("ROLLBACK");
-
       throw new AppError(400, error.message);
     } finally {
       client.release();
@@ -147,8 +150,9 @@ class OrderService {
     const totalItems = parseInt(totItems.rows[0].count);
     const totalPages = Math.ceil(totalItems / limit);
 
-    if (page > totalPages)
+    if (page > totalPages) {
       throw new AppError(400, `There is ${totalPages} pages only, not more`);
+    }
 
     return {
       data: result.rows,
@@ -176,7 +180,9 @@ class OrderService {
       [id],
     );
 
-    if (order.rowCount === 0) throw new AppError(404, "Order not found/exists");
+    if (order.rowCount === 0) {
+      throw new AppError(404, "Order not found / exists");
+    }
 
     return order.rows[0];
   };
@@ -205,8 +211,9 @@ class OrderService {
       [requiredDate, shipper, address, city, region, postalCode, country, id],
     );
 
-    if (updatedOrder.rowCount === 0)
-      throw new AppError(404, "Order not found/exists");
+    if (updatedOrder.rowCount === 0) {
+      throw new AppError(404, "Order not found / exists");
+    }
 
     return updatedOrder.rows[0];
   };
@@ -228,11 +235,9 @@ class OrderService {
         [id],
       );
 
-      if (orderDetails.rowCount === 0)
-        throw new AppError(404, "Order not found/exists");
-
-      const product = orderDetails.rows[0].product_id;
-      const quantity = orderDetails.rows[0].quantity;
+      if (orderDetails.rowCount === 0) {
+        throw new AppError(404, "Order not found / exists");
+      }
 
       // Deletes order details
       await client.query(
@@ -260,7 +265,7 @@ class OrderService {
         SET units_in_stock = units_in_stock + $1
         WHERE product_id = $2
       `,
-          [row.quantity, row.product],
+          [row.quantity, row.product_id],
         );
       }
 

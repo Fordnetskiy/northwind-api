@@ -1,30 +1,43 @@
+// Variables
+
 const { Router } = require("express");
 const router = Router();
-const validade = require("../middlewares/validate");
+const validate = require("../middlewares/validate");
 const {
   createSuppSchema,
   updateSuppSchema,
 } = require("../validation/supp.schema");
-
+const { numericIdValidation } = require("../validation/shared.schema");
 const SuppController = require("../controller/supp.controller");
 
-// C.R.U.D routes ===
+// Routes
 
-// Create
-router.post("/", validade(createSuppSchema), SuppController.create);
+router.post("/", validate(createSuppSchema), SuppController.create);
 
-// Read
 router.get("/", SuppController.getAll);
-router.get("/:id", SuppController.getOne);
+router.get(
+  "/:id",
+  validate(numericIdValidation, "params"),
+  SuppController.getOne,
+);
 
-// // Update
-router.put("/:id", validade(updateSuppSchema), SuppController.updateOne);
+router.put(
+  "/:id",
+  validate(numericIdValidation, "params"),
+  validate(updateSuppSchema),
+  SuppController.updateOne,
+);
 
-// // Delete
-router.delete("/:id", SuppController.delete);
+router.patch(
+  "/restore/:id",
+  validate(numericIdValidation, "params"),
+  SuppController.restore,
+);
 
-// ===
-
-router.post("/restore/:id", SuppController.restore);
+router.delete(
+  "/:id",
+  validate(numericIdValidation, "params"),
+  SuppController.delete,
+);
 
 module.exports = router;

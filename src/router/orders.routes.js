@@ -1,16 +1,37 @@
+// Variables
+
 const { Router } = require("express");
 const router = Router();
-const validade = require("../middlewares/validate");
+const validate = require("../middlewares/validate");
 const {
   createOrderSchema,
   updateOrderSchema,
 } = require("../validation/orders.schema");
+const { numericIdValidation } = require("../validation/shared.schema");
 const OrderController = require("../controller/orders.controller");
 
-router.post("/", validade(createOrderSchema), OrderController.create);
+// Routes
+
+router.post("/", validate(createOrderSchema), OrderController.create);
+
 router.get("/", OrderController.getAll);
-router.get("/:id", OrderController.getOne);
-router.put("/:id", validade(updateOrderSchema), OrderController.updateOrder);
-router.delete("/:id", OrderController.deleteOrder);
+router.get(
+  "/:id",
+  validate(numericIdValidation, "params"),
+  OrderController.getOne,
+);
+
+router.put(
+  "/:id",
+  validate(numericIdValidation, "params"),
+  validate(updateOrderSchema),
+  OrderController.updateOrder,
+);
+
+router.delete(
+  "/:id",
+  validate(numericIdValidation, "params"),
+  OrderController.deleteOrder,
+);
 
 module.exports = router;

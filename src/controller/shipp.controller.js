@@ -7,8 +7,7 @@ class ShippController {
 
       res.status(201).json({
         success: true,
-        message: "New shipper was created",
-        createdShipper: result,
+        data: result,
       });
     } catch (error) {
       next(error);
@@ -21,7 +20,6 @@ class ShippController {
 
       res.json({
         success: true,
-        message: "Shippers was finded",
         ...result,
       });
     } catch (error) {
@@ -36,8 +34,7 @@ class ShippController {
 
       res.json({
         success: true,
-        message: "Shipper was finded",
-        shipper: result,
+        data: result,
       });
     } catch (error) {
       next(error);
@@ -51,8 +48,7 @@ class ShippController {
 
       res.json({
         success: true,
-        message: "Shipper credentials was updated!",
-        shipper: result,
+        data: result,
       });
     } catch (error) {
       next(error);
@@ -62,13 +58,11 @@ class ShippController {
   deleteShipper = async (req, res, next) => {
     try {
       const id = parseInt(req.params.id);
-
       const result = await ShippService.delete(id);
 
       res.json({
         success: true,
-        message: "Shipper was deleted!",
-        shipper: result,
+        data: result,
       });
     } catch (error) {
       next(error);
@@ -82,8 +76,7 @@ class ShippController {
 
       res.json({
         success: true,
-        message: "Shipper was restored!",
-        shipper: result,
+        data: result,
       });
     } catch (error) {
       next(error);

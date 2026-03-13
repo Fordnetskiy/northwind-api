@@ -1,5 +1,4 @@
 const ProdService = require("../service/prod.service");
-const AppError = require("../utils/AppError");
 
 class ProdController {
   // Statistics
@@ -22,8 +21,7 @@ class ProdController {
 
       res.status(201).json({
         success: true,
-        message: "Product was created!",
-        product: result,
+        data: result,
       });
     } catch (error) {
       next(error);
@@ -35,7 +33,7 @@ class ProdController {
     try {
       const result = await ProdService.getAll(req.query);
 
-      res.json({
+      res.status(200).json({
         success: true,
         ...result,
       });
@@ -49,11 +47,9 @@ class ProdController {
       const id = parseInt(req.params.id);
       const result = await ProdService.getOne(id);
 
-      if (result.rowCount === 0) throw new AppError(404, "Product not exists");
-
-      res.json({
+      res.status(200).json({
         success: true,
-        data: result.rows[0],
+        data: result,
       });
     } catch (error) {
       next(error);
@@ -67,8 +63,7 @@ class ProdController {
       const result = await ProdService.update(req.body, id);
 
       res.status(200).json({
-        succes: true,
-        message: "Product was updated!",
+        success: true,
         data: result,
       });
     } catch (error) {
@@ -80,15 +75,11 @@ class ProdController {
   delete = async (req, res, next) => {
     try {
       const id = parseInt(req.params.id);
-
       const result = await ProdService.delete(id);
-
-      if (result.rowCount === 0) throw new AppError(404, "Product not exists!");
 
       res.status(200).json({
         success: true,
-        message: "Product was deleted!",
-        product: result,
+        data: result,
       });
     } catch (error) {
       next(error);

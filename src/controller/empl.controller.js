@@ -8,7 +8,6 @@ class EmplController {
 
       res.status(200).json({
         success: true,
-        message: "Orders of this employee was finded",
         ...result,
       });
     } catch (error) {
@@ -22,8 +21,7 @@ class EmplController {
 
       res.status(201).json({
         success: true,
-        message: "The new employer was created",
-        employer: result,
+        data: result,
       });
     } catch (error) {
       next(error);
@@ -32,12 +30,11 @@ class EmplController {
 
   getAll = async (req, res, next) => {
     try {
-      const employersList = await EmplService.findAll(req.query);
+      const result = await EmplService.findAll(req.query);
 
       res.status(200).json({
         success: true,
-        message: "Employees was finded",
-        ...employersList,
+        ...result,
       });
     } catch (error) {
       next(error);
@@ -48,12 +45,11 @@ class EmplController {
     try {
       const id = parseInt(req.params.id);
 
-      const employee = await EmplService.findById(id);
+      const result = await EmplService.findById(id);
 
       res.status(200).json({
         success: true,
-        message: "Employer was finded!",
-        employer: employee,
+        data: result,
       });
     } catch (error) {
       next(error);
@@ -67,8 +63,7 @@ class EmplController {
 
       res.status(200).json({
         success: true,
-        message: "Employer credentials was updated",
-        employer: result,
+        data: result,
       });
     } catch (error) {
       next(error);
@@ -82,8 +77,7 @@ class EmplController {
 
       res.status(200).json({
         success: true,
-        message: "Employer was deleted!",
-        employer: result,
+        data: result,
       });
     } catch (error) {
       next(error);
@@ -93,13 +87,11 @@ class EmplController {
   restoreEmployee = async (req, res, next) => {
     try {
       const id = parseInt(req.params.id);
-
       const result = await EmplService.restore(id);
 
       res.status(200).json({
         success: true,
-        message: "Employer was restored",
-        employer: result,
+        data: result,
       });
     } catch (error) {
       next(error);

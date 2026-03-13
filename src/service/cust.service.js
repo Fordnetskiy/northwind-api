@@ -84,14 +84,12 @@ class CustService {
   };
 
   getById = async (id) => {
-    const customerId = id.trim().toUpperCase();
-
     const customer = await db.query(
       `
       SELECT * FROM customers
       WHERE customer_id = $1 AND is_deleted = false
     `,
-      [customerId],
+      [id],
     );
 
     if (customer.rowCount === 0) {
