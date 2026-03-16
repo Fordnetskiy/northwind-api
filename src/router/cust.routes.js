@@ -14,9 +14,16 @@ const CustController = require("../controller/cust.controller");
 
 // Routes
 
-router.get("/deleted", CustController.getDeleted);
+router.get(
+  "/deleted",
+  AuthCheck,
+  RoleCheck(["admin"]),
+  CustController.getDeleted,
+);
 router.patch(
   "/restore/:id",
+  AuthCheck,
+  RoleCheck(["admin"]),
   validade(idValidation, "params"),
   CustController.restoreCustomer,
 );
