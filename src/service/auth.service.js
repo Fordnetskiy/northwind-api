@@ -1,6 +1,7 @@
 const db = require("../config/database");
 const AppError = require("../utils/AppError");
 const bcrypt = require("bcrypt");
+const { generateToken } = require("../utils/jwt.token");
 
 class AuthService {
   // Private
@@ -95,6 +96,40 @@ class AuthService {
     } finally {
       client.release();
     }
+  };
+
+  login = async (email, password) => {
+    const user = await db.query(
+      `
+      SELECT id, email, password_hash, role, employee_id, customer_id
+      FROM users
+      WHERE email = $1
+    `,
+      [email],
+    );
+
+    if (user.rowCount === 0) {
+      throw new AppError(401, "Wrong email or password");
+    }
+
+    const isMatch = await bcrypt.compare(password, user.rows[0].password_hash);
+
+    if (!isMatch) {
+      throw new AppError(401, "Wrong email or password");
+    }
+
+    const { id, role, employee_id, customer_id } = user.rows[0];
+    const payload = {
+      sub: id,
+      role,
+      employeeId: employee_id,
+      customerId: customer_id,
+    };
+
+    const token = generateToken(payload);
+    console.log(token);
+
+    return token;
   };
 }
 

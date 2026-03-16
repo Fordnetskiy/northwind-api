@@ -15,6 +15,20 @@ class AuthController {
       next(error);
     }
   };
+
+  login = async (req, res, next) => {
+    try {
+      const { email, password } = req.body;
+      const token = await AuthService.login(email, password);
+
+      res.status(200).json({
+        success: true,
+        token,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = new AuthController();
