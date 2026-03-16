@@ -2,6 +2,7 @@
 
 const { Router } = require("express");
 const router = Router();
+const { AuthCheck, RoleCheck } = require("../middlewares/auth.checker");
 const validade = require("../middlewares/validate");
 const {
   idValidation,
@@ -22,15 +23,28 @@ router.patch(
 
 router.post(
   "/",
+  AuthCheck,
+  RoleCheck(["admin"]),
   validade(createCustomerValidation),
   CustController.createCustomer,
 );
 
-router.get("/", validade(queryValidation, "query"), CustController.getAll);
-router.get("/:id", validade(idValidation, "params"), CustController.getOne);
+router.get(
+  "/",
+  AuthCheck,
+  validade(queryValidation, "query"),
+  CustController.getAll,
+);
+router.get(
+  "/:id",
+  AuthCheck,
+  validade(idValidation, "params"),
+  CustController.getOne,
+);
 
 router.put(
   "/:id",
+  AuthCheck,
   validade(idValidation, "params"),
   validade(updateCustomerValidation),
   CustController.updateCustomer,
@@ -38,6 +52,7 @@ router.put(
 
 router.delete(
   "/:id",
+  AuthCheck,
   validade(idValidation, "params"),
   CustController.deleteCustomer,
 );
