@@ -35,4 +35,15 @@ const RoleCheck = (roles) => {
   };
 };
 
-module.exports = { AuthCheck, RoleCheck };
+const OwnerCheck = (req, res, next) => {
+  const isOwner = req.user.customerId === req.params.id;
+  const isAdmin = req.user.role === "admin";
+
+  if (!isOwner && !isAdmin) {
+    return next(new AppError(403, "Access is denied!"));
+  }
+
+  next();
+};
+
+module.exports = { AuthCheck, RoleCheck, OwnerCheck };

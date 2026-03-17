@@ -2,7 +2,11 @@
 
 const { Router } = require("express");
 const router = Router();
-const { AuthCheck, RoleCheck } = require("../middlewares/auth.checker");
+const {
+  AuthCheck,
+  RoleCheck,
+  OwnerCheck,
+} = require("../middlewares/auth.checker");
 const validade = require("../middlewares/validate");
 const {
   idValidation,
@@ -53,6 +57,7 @@ router.put(
   "/:id",
   AuthCheck,
   validade(idValidation, "params"),
+  OwnerCheck,
   validade(updateCustomerValidation),
   CustController.updateCustomer,
 );
@@ -61,6 +66,7 @@ router.delete(
   "/:id",
   AuthCheck,
   validade(idValidation, "params"),
+  OwnerCheck,
   CustController.deleteCustomer,
 );
 
