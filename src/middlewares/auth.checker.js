@@ -36,10 +36,11 @@ const RoleCheck = (roles) => {
 };
 
 const OwnerCheck = (req, res, next) => {
-  const isOwner = req.user.customerId === req.params.id;
+  const isOwnerCustomer = req.user.customerId === req.params.id;
+  const isOwnerEmployee = req.user.employeeId === req.params.id;
   const isAdmin = req.user.role === "admin";
 
-  if (!isOwner && !isAdmin) {
+  if (!isOwnerCustomer && !isOwnerEmployee && !isAdmin) {
     return next(new AppError(403, "Access is denied!"));
   }
 
