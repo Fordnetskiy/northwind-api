@@ -172,7 +172,21 @@ class OrderController {
     }
   };
 
-  deleteMyOrder = async (req, res, next) => {};
+  deleteMyOrder = async (req, res, next) => {
+    try {
+      const customerId = req.user.customerId;
+      const id = parseInt(req.params.id);
+
+      const result = await OrderService.deleteMyOrder(customerId, id);
+
+      res.status(200).json({
+        success: true,
+        ...result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = new OrderController();
