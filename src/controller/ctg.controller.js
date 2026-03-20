@@ -81,6 +81,20 @@ class CtgController {
     }
   };
 
+  deletedList = async (req, res, next) => {
+    try {
+      const result = await CtgService.deletedList();
+
+      res.status(200).json({
+        success: true,
+        message: "List of deleted categories",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   restore = async (req, res, next) => {
     try {
       const id = parseInt(req.params.id);

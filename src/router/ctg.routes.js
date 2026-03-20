@@ -13,6 +13,13 @@ const CtgController = require("../controller/ctg.controller");
 
 // Routes
 
+router.get(
+  "/deleted_categories",
+  AuthCheck,
+  RoleCheck(["admin"]),
+  CtgController.deletedList,
+);
+
 router.patch(
   "/restore/:id",
   AuthCheck,
@@ -49,9 +56,9 @@ router.put(
 );
 router.delete(
   "/:id",
-  validate(numericIdValidation, "params"),
   AuthCheck,
   RoleCheck(["admin"]),
+  validate(numericIdValidation, "params"),
   CtgController.delete,
 );
 

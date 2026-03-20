@@ -48,7 +48,7 @@ class CtgService {
     const totalPages = Math.ceil(totalItems / limit);
 
     if (totalItems < 1) {
-      throw new AppError(404, "This category hasn`t any products yet");
+      throw new AppError(404, "This category hasn't any products yet");
     }
 
     if (page > totalPages) {
@@ -95,14 +95,15 @@ class CtgService {
     const totalItems = parseInt(ctgCount.rows[0].count);
     const totalPages = Math.ceil(totalItems / limit);
 
+    if (ctgRes.rowCount === 0) {
+      throw new AppError(404, "Categories not exists");
+    }
+
     if (page > totalPages) {
       throw new AppError(
         404,
         `Page ${page} not found. Total pages available: ${totalPages}`,
       );
-    }
-    if (ctgRes.rowCount === 0) {
-      throw new AppError(404, "Categories not exists");
     }
 
     return {
@@ -178,6 +179,19 @@ class CtgService {
     }
 
     return deletedCategory.rows[0];
+  };
+
+  deletedList = async () => {
+    const deletedList = await db.query(`
+      SELECT * FROM categories
+      WHERE is_deleted = true
+    `);
+
+    if (deletedList.rowCount === 0) {
+      throw new AppError(404, "No one is deleted for this moment");
+    }
+
+    return deletedList.rows;
   };
 
   restore = async (id) => {
