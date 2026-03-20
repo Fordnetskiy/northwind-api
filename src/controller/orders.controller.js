@@ -139,7 +139,38 @@ class OrderController {
     }
   };
 
-  updateMyOrder = async (req, res, next) => {};
+  updateMyOrder = async (req, res, next) => {
+    try {
+      const customerId = req.user.customerId;
+      const id = parseInt(req.params.id);
+      const {
+        requiredDate,
+        shipper,
+        address,
+        city,
+        region,
+        postalCode,
+        country,
+      } = req.body;
+
+      const result = await OrderService.updateMyOrder(customerId, id, {
+        requiredDate,
+        shipper,
+        address,
+        city,
+        region,
+        postalCode,
+        country,
+      });
+
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 
   deleteMyOrder = async (req, res, next) => {};
 }
