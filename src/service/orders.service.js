@@ -2,7 +2,7 @@ const db = require("../config/database");
 const AppError = require("../utils/AppError");
 
 class OrderService {
-  // Create ====
+  // Admin / Employee
   create = async (data) => {
     // Data destructurization -!-
     const {
@@ -118,7 +118,6 @@ class OrderService {
     }
   };
 
-  // Read ===
   getAll = async (q) => {
     // these variables are for pagination -!-
     const page = parseInt(q.page) || 1;
@@ -299,6 +298,127 @@ class OrderService {
 
     // Transaction ends
   };
+
+  // Customer
+  myCreate = async (customerId, data) => {
+    const {
+      employeeId,
+      shipper,
+      freight,
+      address,
+      city,
+      country,
+      postalCode,
+      productId,
+      quantity,
+    } = data;
+
+    const client = await db.connect();
+
+    try {
+      await client.query("BEGIN");
+
+      const shipName = await client.query(
+        `
+        SELECT company_name
+        FROM customers
+        WHERE customer_id = $1
+        FOR UPDATE
+      `,
+        [customerId],
+      );
+
+      // Creates order -!-
+      const orderRes = await client.query(
+        `
+        INSERT INTO orders (customer_id, employee_id, order_date, required_date, ship_via, freight, ship_name, ship_address, ship_city, ship_country, ship_postal_code)
+        VALUES (
+          $1, $2, CURRENT_DATE, CURRENT_DATE + INTERVAL '7 days', $3, $4, $5, $6, $7, $8, $9
+        )
+        RETURNING *
+      `,
+        [
+          customerId,
+          employeeId,
+          shipper,
+          freight,
+          shipName.rows[0].company_name,
+          address,
+          city,
+          country,
+          postalCode,
+        ],
+      );
+      const orderId = orderRes.rows[0].order_id;
+
+      // Extract price and units from product table with pessimistic lock -!-
+      const productRes = await client.query(
+        `
+        SELECT unit_price, units_in_stock
+        FROM products
+        WHERE product_id = $1
+        FOR UPDATE
+      `,
+        [productId],
+      );
+      const price = productRes.rows[0].unit_price;
+      const stock = productRes.rows[0].units_in_stock;
+
+      if (stock === null) {
+        throw new AppError(404, "Product not found!");
+      }
+
+      // Creates order details after order creation -!-
+      await client.query(
+        `
+        INSERT INTO order_details (
+          order_id, product_id, unit_price, quantity, discount
+        ) VALUES (
+          $1, $2, $3, $4, $5
+        )
+      `,
+        [orderId, productId, price, quantity, 0],
+      );
+
+      const res = await client.query(
+        `
+        UPDATE products
+        SET units_in_stock = units_in_stock - $1
+        WHERE product_id = $2 AND units_in_stock >= $1
+        RETURNING units_in_stock
+      `,
+        [quantity, productId],
+      );
+
+      if (res.rowCount === 0) {
+        throw new AppError(404, "Not enough stock!");
+      }
+
+      const sum = Math.round(quantity * price);
+
+      await client.query("COMMIT");
+
+      return {
+        data: orderRes.rows[0],
+        price,
+        quantity,
+        totalPrice: sum,
+      };
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw new AppError(400, error);
+    } finally {
+      client.release();
+    }
+  };
+
+  myOrders = async (req, res, next) => {};
+
+  myOrder = async (req, res, next) => {};
+
+  updateMyOrder = async (req, res, next) => {};
+
+  deleteMyOrder = async (req, res, next) => {};
 }
 
 module.exports = new OrderService();

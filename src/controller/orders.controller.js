@@ -1,6 +1,8 @@
 const OrderService = require("../service/orders.service");
 
 class OrderController {
+  // Admin / Employee routes
+
   create = async (req, res, next) => {
     try {
       const result = await OrderService.create(req.body);
@@ -68,6 +70,52 @@ class OrderController {
       next(error);
     }
   };
+
+  // Customer routes
+
+  myOrderCreate = async (req, res, next) => {
+    try {
+      const customerId = req.user.customerId;
+      const {
+        employeeId,
+        shipper,
+        freight,
+        address,
+        city,
+        country,
+        postalCode,
+        productId,
+        quantity,
+      } = req.body;
+
+      const result = await OrderService.myCreate(customerId, {
+        employeeId,
+        shipper,
+        freight,
+        address,
+        city,
+        country,
+        postalCode,
+        productId,
+        quantity,
+      });
+
+      res.status(201).json({
+        success: true,
+        ...result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  myOrders = async (req, res, next) => {};
+
+  myOrder = async (req, res, next) => {};
+
+  updateMyOrder = async (req, res, next) => {};
+
+  deleteMyOrder = async (req, res, next) => {};
 }
 
 module.exports = new OrderController();

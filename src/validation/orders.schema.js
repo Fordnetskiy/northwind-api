@@ -1,7 +1,6 @@
 const Joi = require("joi");
 
 const createOrderSchema = Joi.object({
-  customerId: Joi.string().required(),
   employeeId: Joi.number().required(),
   shipper: Joi.number().required(),
   freight: Joi.number().required(),
