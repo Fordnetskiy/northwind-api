@@ -62,6 +62,13 @@ class CtgController {
 
   delete = async (req, res, next) => {
     try {
+      const id = parseInt(req.params.id);
+      const result = await CtgService.delete(id);
+
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
     } catch (error) {
       next(error);
     }

@@ -99,7 +99,23 @@ class CtgService {
     return updatedCategory.rows[0];
   };
 
-  delete = async (id) => {};
+  delete = async (id) => {
+    const deletedCategory = await db.query(
+      `
+      UPDATE categories
+      SET is_deleted = true
+      WHERE category_id = $1 AND is_deleted = false
+      RETURNING *
+    `,
+      [id],
+    );
+
+    if (deletedCategory.rowCount === 0) {
+      throw new AppError(404, "Category not exists");
+    }
+
+    return deletedCategory.rows[0];
+  };
 }
 
 module.exports = new CtgService();
