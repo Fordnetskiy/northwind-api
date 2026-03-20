@@ -80,7 +80,24 @@ class CtgService {
     return newCategory.rows[0];
   };
 
-  update = async (id, data) => {};
+  update = async (id, data) => {
+    const { categoryName, description } = data;
+    const updatedCategory = await db.query(
+      `
+      UPDATE categories
+      SET category_name = $1, description = $2
+      WHERE category_id = $3 AND is_deleted = false
+      RETURNING *
+    `,
+      [categoryName, description, id],
+    );
+
+    if (updatedCategory.rowCount === 0) {
+      throw new AppError(404, "Category not exists");
+    }
+
+    return updatedCategory.rows[0];
+  };
 
   delete = async (id) => {};
 }
