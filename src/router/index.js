@@ -3,6 +3,7 @@
 const { Router } = require("express");
 const route = Router();
 const authRoutes = require("./auth.routes");
+const catagoryRoutes = require("./ctg.routes");
 const customerRoutes = require("./cust.routes");
 const employeeRoutes = require("./empl.routes");
 const orderRoutes = require("./orders.routes");
@@ -13,6 +14,7 @@ const supplierRoutes = require("./supp.routes");
 // Main resources
 
 route.use("/auth", authRoutes);
+route.use("/categories", catagoryRoutes);
 route.use("/customers", customerRoutes);
 route.use("/employees", employeeRoutes);
 route.use("/orders", orderRoutes);
