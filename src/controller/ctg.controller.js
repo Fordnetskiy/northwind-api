@@ -73,6 +73,21 @@ class CtgController {
       next(error);
     }
   };
+
+  restore = async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      const result = await CtgService.restore(id);
+
+      res.status(200).json({
+        success: true,
+        message: "Category was restored",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = new CtgController();

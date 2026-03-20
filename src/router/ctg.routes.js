@@ -13,6 +13,13 @@ const CtgController = require("../controller/ctg.controller");
 
 // Routes
 
+router.patch(
+  "/restore/:id",
+  AuthCheck,
+  RoleCheck(["admin"]),
+  CtgController.restore,
+);
+
 router.get(
   "/:id/products",
   validate(numericIdValidation, "params"),
