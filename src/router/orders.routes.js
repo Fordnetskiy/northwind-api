@@ -15,8 +15,7 @@ const {
 const { numericIdValidation } = require("../validation/shared.schema");
 const OrderController = require("../controller/orders.controller");
 
-// Admin / Employee Routes
-
+// Create
 router.post(
   "/",
   AuthCheck,
@@ -24,12 +23,29 @@ router.post(
   validate(createOrderSchema),
   OrderController.create,
 );
+router.post(
+  "/my",
+  AuthCheck,
+  RoleCheck(["customer"]),
+  validate(createOrderSchema),
+  OrderController.myOrderCreate,
+);
 
+// Read
 router.get(
   "/",
   AuthCheck,
   RoleCheck(["admin", "employee"]),
   OrderController.getAll,
+);
+router.get("/my", AuthCheck, RoleCheck(["customer"]), OrderController.myOrders);
+
+router.get(
+  "/my/:id",
+  AuthCheck,
+  RoleCheck(["customer"]),
+  validate(numericIdValidation, "params"),
+  OrderController.myOrder,
 );
 router.get(
   "/:id",
@@ -39,6 +55,15 @@ router.get(
   OrderController.getOne,
 );
 
+// Update
+router.put(
+  "/my/:id",
+  AuthCheck,
+  RoleCheck(["customer"]),
+  validate(numericIdValidation, "params"),
+  validate(updateOrderSchema),
+  OrderController.updateMyOrder,
+);
 router.put(
   "/:id",
   AuthCheck,
@@ -48,44 +73,20 @@ router.put(
   OrderController.updateOrder,
 );
 
+// Delete
+router.delete(
+  "/my/:id",
+  AuthCheck,
+  RoleCheck(["customer"]),
+  validate(numericIdValidation, "params"),
+  OrderController.deleteMyOrder,
+);
 router.delete(
   "/:id",
   AuthCheck,
   RoleCheck(["admin", "employee"]),
   validate(numericIdValidation, "params"),
   OrderController.deleteOrder,
-);
-
-// Customer Order Routes
-
-router.post(
-  "/my",
-  AuthCheck,
-  validate(createOrderSchema),
-  OrderController.myOrderCreate,
-);
-
-router.get("/my", AuthCheck, OrderController.myOrders);
-router.get(
-  "/my/order/:id",
-  AuthCheck,
-  validate(numericIdValidation, "params"),
-  OrderController.myOrder,
-);
-
-router.put(
-  "/my/order/:id",
-  AuthCheck,
-  validate(numericIdValidation, "params"),
-  validate(updateOrderSchema),
-  OrderController.updateMyOrder,
-);
-
-router.delete(
-  "/my/order/:id",
-  AuthCheck,
-  validate(numericIdValidation, "params"),
-  OrderController.deleteMyOrder,
 );
 
 module.exports = router;

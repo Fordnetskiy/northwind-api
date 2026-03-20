@@ -2,6 +2,7 @@ const db = require("../config/database");
 const AppError = require("../utils/AppError");
 
 class OrderService {
+  #MAX_LIMIT = 50;
   // Admin / Employee
   create = async (data) => {
     // Data destructurization -!-
@@ -300,6 +301,7 @@ class OrderService {
   };
 
   // Customer
+
   myCreate = async (customerId, data) => {
     const {
       employeeId,
@@ -412,13 +414,78 @@ class OrderService {
     }
   };
 
-  myOrders = async (req, res, next) => {};
+  myOrders = async (customerId, q) => {
+    // Pagination variables
+    const page = Math.max(parseInt(q.page) || 1, 1); // if client`s value will be negative, 1
+    const clientLimit = Math.max(parseInt(q.limit) || 10, 10); // if client`s value will be negative, 10
+    const limit = Math.min(clientLimit, this.#MAX_LIMIT);
+    const offset = (page - 1) * limit;
 
-  myOrder = async (req, res, next) => {};
+    const [result, totItems] = await Promise.all([
+      db.query(
+        `
+        SELECT order_id, customer_id, c.company_name AS customer_company,
+            CONCAT(first_name,  ' ', last_name) AS employee, order_date, required_date, shipped_date, s.company_name AS shipper,
+            freight, ship_address, ship_city, ship_country, ship_postal_code
+        FROM orders
+        JOIN customers c USING(customer_id)
+        JOIN employees USING(employee_id)
+        JOIN shippers s ON s.shipper_id = orders.ship_via
+        WHERE customer_id = $1
+        ORDER BY order_id
+        OFFSET $2
+        LIMIT $3
+      `,
+        [customerId, offset, limit],
+      ),
+      db.query(
+        `
+        SELECT COUNT(*)
+        FROM orders
+        JOIN customers c USING(customer_id)
+        JOIN employees USING(employee_id)
+        JOIN shippers s ON s.shipper_id = orders.ship_via
+        WHERE customer_id = $1
+      `,
+        [customerId],
+      ),
+    ]);
 
-  updateMyOrder = async (req, res, next) => {};
+    const totalItems = parseInt(totItems.rows[0].count);
+    const totalPages = Math.ceil(totalItems / limit);
 
-  deleteMyOrder = async (req, res, next) => {};
+    if (totalItems === 0) {
+      return {
+        data: [],
+        meta: {
+          total: 0,
+          page: 1,
+          totalPages: 0,
+          limit,
+        },
+      };
+    }
+
+    if (page > totalPages) {
+      throw new AppError(404, `There is ${totalPages} pages only, not more`);
+    }
+
+    return {
+      data: result.rows,
+      meta: {
+        total: totalItems,
+        page,
+        totalPages,
+        limit,
+      },
+    };
+  };
+
+  myOrder = async () => {};
+
+  updateMyOrder = async () => {};
+
+  deleteMyOrder = async () => {};
 }
 
 module.exports = new OrderService();

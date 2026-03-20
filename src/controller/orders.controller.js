@@ -109,7 +109,19 @@ class OrderController {
     }
   };
 
-  myOrders = async (req, res, next) => {};
+  myOrders = async (req, res, next) => {
+    try {
+      const customerId = req.user.customerId;
+      const result = await OrderService.myOrders(customerId, req.query);
+
+      res.status(200).json({
+        success: true,
+        ...result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 
   myOrder = async (req, res, next) => {};
 
