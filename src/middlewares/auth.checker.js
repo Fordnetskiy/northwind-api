@@ -35,16 +35,19 @@ const RoleCheck = (roles) => {
   };
 };
 
-const OwnerCheck = (req, res, next) => {
-  const isOwnerCustomer = req.user.customerId === req.params.id;
-  const isOwnerEmployee = req.user.employeeId === req.params.id;
-  const isAdmin = req.user.role === "admin";
+const OwnerCheck = (paramName = "id") => {
+  return (req, res, next) => {
+    const resourceId = req.params[paramName];
+    const isOwnerCustomer = req.user.customerId === resourceId;
+    const isOwnerEmployee = req.user.employeeId === resourceId;
+    const isAdmin = req.user.role === "admin";
 
-  if (!isOwnerCustomer && !isOwnerEmployee && !isAdmin) {
-    return next(new AppError(403, "Access is denied!"));
-  }
+    if (!isOwnerCustomer && !isOwnerEmployee && !isAdmin) {
+      return next(new AppError(403, "Access is denied!"));
+    }
 
-  next();
+    next();
+  };
 };
 
 module.exports = { AuthCheck, RoleCheck, OwnerCheck };
