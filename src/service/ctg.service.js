@@ -4,7 +4,70 @@ const AppError = require("../utils/AppError");
 class CtgService {
   #MAX_LIMIT = 50;
 
-  getCtgProducts = async (id, q) => {};
+  getCtgProducts = async (id, q) => {
+    const page = Math.max(parseInt(q.page) || 1, 1);
+    const clientLimit = Math.max(parseInt(q.limit) || 10, 10);
+    const limit = Math.min(clientLimit, this.#MAX_LIMIT);
+    const offset = (page - 1) * limit;
+
+    const [prodRes, countRes, ctgExist] = await Promise.all([
+      db.query(
+        `
+        SELECT category_name, product_id, product_name, unit_price, units_in_stock, company_name
+        FROM products
+        JOIN suppliers USING(supplier_id)
+        JOIN categories USING(category_id)
+        WHERE category_id = $1 AND products.is_deleted = false
+        ORDER BY product_id
+        OFFSET $2
+        LIMIT $3
+      `,
+        [id, offset, limit],
+      ),
+      db.query(
+        `
+        SELECT COUNT(*)
+        FROM products
+        WHERE category_id = $1 AND is_deleted = false
+      `,
+        [id],
+      ),
+      db.query(
+        `
+        SELECT category_id FROM categories WHERE category_id = $1 AND is_deleted = false
+      `,
+        [id],
+      ),
+    ]);
+
+    if (ctgExist.rowCount === 0) {
+      throw new AppError(404, "Category not found");
+    }
+
+    const totalItems = parseInt(countRes.rows[0].count);
+    const totalPages = Math.ceil(totalItems / limit);
+
+    if (totalItems < 1) {
+      throw new AppError(404, "This category hasn`t any products yet");
+    }
+
+    if (page > totalPages) {
+      throw new AppError(
+        400,
+        `Page ${page} not found. Total pages available: ${totalPages}`,
+      );
+    }
+
+    return {
+      data: prodRes.rows,
+      meta: {
+        total: totalItems,
+        page,
+        totalPages,
+        limit,
+      },
+    };
+  };
 
   getAll = async (q) => {
     const page = Math.max(parseInt(q.page) || 1, 1);

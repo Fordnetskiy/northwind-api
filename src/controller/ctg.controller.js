@@ -3,6 +3,13 @@ const CtgService = require("../service/ctg.service");
 class CtgController {
   getCtgProducts = async (req, res, next) => {
     try {
+      const id = parseInt(req.params.id);
+      const result = await CtgService.getCtgProducts(id, req.query);
+
+      res.status(200).json({
+        success: true,
+        ...result,
+      });
     } catch (error) {
       next(error);
     }
