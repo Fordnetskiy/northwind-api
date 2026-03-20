@@ -481,7 +481,27 @@ class OrderService {
     };
   };
 
-  myOrder = async () => {};
+  myOrder = async (customerId, id) => {
+    const order = await db.query(
+      `
+      SELECT order_id, customer_id, c.company_name AS customer_company,
+            CONCAT(first_name,  ' ', last_name) AS employee, order_date, required_date, shipped_date, s.company_name AS shipper,
+            freight, ship_address, ship_city, ship_country,ship_postal_code
+      FROM orders
+      JOIN customers c USING(customer_id)
+      JOIN employees USING(employee_id)
+      JOIN shippers s ON s.shipper_id = orders.ship_via
+      WHERE customer_id = $1 AND order_id = $2
+    `,
+      [customerId, id],
+    );
+
+    if (order.rowCount === 0) {
+      throw new AppError(404, "Order not found / exists");
+    }
+
+    return order.rows[0];
+  };
 
   updateMyOrder = async () => {};
 
