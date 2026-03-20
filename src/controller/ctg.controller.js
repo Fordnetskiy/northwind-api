@@ -36,6 +36,11 @@ class CtgController {
 
   create = async (req, res, next) => {
     try {
+      const result = await CtgService.create(req.body);
+      res.status(201).json({
+        success: true,
+        data: result,
+      });
     } catch (error) {
       next(error);
     }

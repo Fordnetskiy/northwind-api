@@ -66,7 +66,19 @@ class CtgService {
     return result.rows[0];
   };
 
-  create = async (data) => {};
+  create = async (data) => {
+    const { categoryName, description } = data;
+    const newCategory = await db.query(
+      `
+      INSERT INTO categories (category_name, description)
+      VALUES ($1, $2)
+      RETURNING *
+    `,
+      [categoryName, description],
+    );
+
+    return newCategory.rows[0];
+  };
 
   update = async (id, data) => {};
 
