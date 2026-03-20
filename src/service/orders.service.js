@@ -26,9 +26,10 @@ class OrderService {
 
       const shipName = await client.query(
         `
-        SELECT ship_name
-        FROM orders
-        WHERE customer_id = $1 AND ship_name IS NOT NULL
+        SELECT company_name
+        FROM customers
+        WHERE customer_id = $1
+        FOR UPDATE
       `,
         [customerId],
       );
@@ -47,7 +48,7 @@ class OrderService {
           employeeId,
           shipper,
           freight,
-          shipName.rows[0].ship_name,
+          shipName.rows[0].company_name,
           address,
           city,
           country,
@@ -144,14 +145,29 @@ class OrderService {
       db.query(`
         SELECT COUNT(*)
         FROM orders
+        JOIN customers c USING(customer_id)
+        JOIN employees USING(employee_id)
+        JOIN shippers s ON s.shipper_id = orders.ship_via
       `),
     ]);
 
     const totalItems = parseInt(totItems.rows[0].count);
     const totalPages = Math.ceil(totalItems / limit);
 
+    if (totalItems === 0) {
+      return {
+        data: [],
+        meta: {
+          total: 0,
+          page: 1,
+          totalPages: 0,
+          limit,
+        },
+      };
+    }
+
     if (page > totalPages) {
-      throw new AppError(400, `There is ${totalPages} pages only, not more`);
+      throw new AppError(404, `There is ${totalPages} pages only, not more`);
     }
 
     return {
