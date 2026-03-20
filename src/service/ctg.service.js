@@ -52,7 +52,19 @@ class CtgService {
       },
     };
   };
-  getOne = async (id) => {};
+  getOne = async (id) => {
+    const result = await db.query(
+      `SELECT * FROM categories
+      WHERE category_id = $1 AND is_deleted = false`,
+      [id],
+    );
+
+    if (result.rowCount === 0) {
+      throw new AppError(404, "Category not exists");
+    }
+
+    return result.rows[0];
+  };
 
   create = async (data) => {};
 

@@ -22,6 +22,13 @@ class CtgController {
   };
   getOne = async (req, res, next) => {
     try {
+      const id = parseInt(req.params.id);
+      const result = await CtgService.getOne(id);
+
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
     } catch (error) {
       next(error);
     }
