@@ -68,13 +68,13 @@ http://localhost:3000/api-docs
 1. Create a new PostgreSQL database:
 
 ```sql
-   CREATE DATABASE northwind;
+   CREATE DATABASE yourdbname;
 ```
 
 2. Import the database schema:
 
 ```bash
-   psql -U postgres -d northwind -f database/northwind_dump.sql
+   pg_restore -U postgres -d yourdbname "database/northwind_dump.sql"
 ```
 
 ### First Admin Setup
