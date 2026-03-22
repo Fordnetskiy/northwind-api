@@ -1,5 +1,3 @@
-// src/docs/shippers.js
-
 /**
  * @swagger
  * tags:
@@ -13,6 +11,8 @@
  *   get:
  *     summary: Get all shippers
  *     tags: [Shippers]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -53,6 +53,8 @@
  *   patch:
  *     summary: Restore deleted shipper
  *     tags: [Shippers]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -78,6 +80,8 @@
  *   get:
  *     summary: Get shipper by id
  *     tags: [Shippers]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -108,6 +112,8 @@
  *   post:
  *     summary: Create shipper
  *     tags: [Shippers]
+ *     security:
+ *      - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -136,6 +142,8 @@
  *   put:
  *     summary: Update shipper
  *     tags: [Shippers]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -173,6 +181,8 @@
  *   delete:
  *     summary: Delete shipper (soft delete)
  *     tags: [Shippers]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id

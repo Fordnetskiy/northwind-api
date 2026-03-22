@@ -2,14 +2,11 @@
 
 const { Router } = require("express");
 const router = Router();
-const {
-  AuthCheck,
-  RoleCheck,
-  OwnerCheck,
-} = require("../middlewares/auth.checker");
+const { AuthCheck, RoleCheck } = require("../middlewares/auth.checker");
 const validate = require("../middlewares/validate");
 const {
   createOrderSchema,
+  createOrderSchemaMy,
   updateOrderSchema,
 } = require("../validation/orders.schema");
 const { numericIdValidation } = require("../validation/shared.schema");
@@ -27,7 +24,7 @@ router.post(
   "/my",
   AuthCheck,
   RoleCheck(["customer"]),
-  validate(createOrderSchema),
+  validate(createOrderSchemaMy),
   OrderController.myOrderCreate,
 );
 

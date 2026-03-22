@@ -83,6 +83,7 @@
  *         application/json:
  *           example:
  *             categoryName: New Category
+ *             description: A new category
  *     responses:
  *       201:
  *         description: Created
@@ -99,12 +100,19 @@
 
 /**
  * @swagger
- * /api/v1/categories:
+ * /api/v1/categories/{id}:
  *   put:
  *     summary: Update category
  *     tags: [Categories]
  *     security:
  *      - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Category ID
  *     requestBody:
  *       required: true
  *       content:
@@ -132,12 +140,13 @@
  *     summary: Delete category
  *     tags: [Categories]
  *     security:
- *      - bearerAuth: []
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: category_id
+ *         name: id
  *         required: true
- *         schema: type: integer
+ *         schema:
+ *          type: integer
  *         description: Category ID
  *     responses:
  *       200:

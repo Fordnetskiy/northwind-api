@@ -11,6 +11,8 @@
  *   get:
  *     summary: Get products statistics
  *     tags: [Products]
+ *     security:
+ *      - bearerAuth: []
  *     responses:
  *       200:
  *         description: Success
@@ -118,6 +120,8 @@
  *   post:
  *     summary: Create product
  *     tags: [Products]
+ *     security:
+ *      - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -152,6 +156,8 @@
  *   put:
  *     summary: Update product
  *     tags: [Products]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -200,6 +206,8 @@
  *   delete:
  *     summary: Delete product (soft delete)
  *     tags: [Products]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id

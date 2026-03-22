@@ -18,7 +18,18 @@ class OrderService {
       productId,
       quantity,
     } = data;
-
+    console.log(
+      customerId,
+      employeeId,
+      shipper,
+      freight,
+      address,
+      city,
+      country,
+      postalCode,
+      productId,
+      quantity,
+    );
     // Transaction block -!-
     const client = await db.connect();
 
