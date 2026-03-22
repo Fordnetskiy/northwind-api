@@ -13,6 +13,18 @@ const createOrderSchema = Joi.object({
   quantity: Joi.number().required(),
 });
 
+const createOrderSchemaMy = Joi.object({
+  employeeId: Joi.number().required(),
+  shipper: Joi.number().required(),
+  freight: Joi.number().required(),
+  address: Joi.string().min(10).max(60).required(),
+  city: Joi.string().min(2).max(40).required(),
+  country: Joi.string().min(3).max(30).required(),
+  postalCode: Joi.string().required().min(5).max(12),
+  productId: Joi.number().required(),
+  quantity: Joi.number().required(),
+});
+
 const updateOrderSchema = Joi.object({
   requiredDate: Joi.date(),
   shipper: Joi.number(),
@@ -23,4 +35,4 @@ const updateOrderSchema = Joi.object({
   country: Joi.string().min(3).max(30),
 });
 
-module.exports = { createOrderSchema, updateOrderSchema };
+module.exports = { createOrderSchema, createOrderSchemaMy, updateOrderSchema };

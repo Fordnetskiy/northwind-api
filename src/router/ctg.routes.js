@@ -5,60 +5,61 @@ const router = Router();
 const { AuthCheck, RoleCheck } = require("../middlewares/auth.checker");
 const validate = require("../middlewares/validate");
 const {
-  createSuppSchema,
-  updateSuppSchema,
-} = require("../validation/supp.schema");
+  createCtgSchema,
+  updateCtgSchema,
+} = require("../validation/ctg.schema");
 const { numericIdValidation } = require("../validation/shared.schema");
-const SuppController = require("../controller/supp.controller");
+const CtgController = require("../controller/ctg.controller");
 
 // Routes
 
-router.post(
-  "/",
+router.get(
+  "/deleted_categories",
   AuthCheck,
   RoleCheck(["admin"]),
-  validate(createSuppSchema),
-  SuppController.create,
-);
-
-router.get(
-  "/",
-  AuthCheck,
-  RoleCheck(["admin", "employee"]),
-  SuppController.getAll,
+  CtgController.deletedList,
 );
 
 router.patch(
   "/restore/:id",
   AuthCheck,
   RoleCheck(["admin"]),
-  validate(numericIdValidation, "params"),
-  SuppController.restore,
+  CtgController.restore,
 );
 
 router.get(
-  "/:id",
-  AuthCheck,
-  RoleCheck(["admin", "employee"]),
+  "/:id/products",
   validate(numericIdValidation, "params"),
-  SuppController.getOne,
+  CtgController.getCtgProducts,
+);
+router.get("/", CtgController.getAll);
+router.get(
+  "/:id",
+  validate(numericIdValidation, "params"),
+  CtgController.getOne,
 );
 
+router.post(
+  "/",
+  AuthCheck,
+  RoleCheck(["admin"]),
+  validate(createCtgSchema),
+  CtgController.create,
+);
 router.put(
   "/:id",
   AuthCheck,
   RoleCheck(["admin"]),
   validate(numericIdValidation, "params"),
-  validate(updateSuppSchema),
-  SuppController.updateOne,
+  validate(updateCtgSchema),
+  CtgController.update,
 );
-
 router.delete(
   "/:id",
   AuthCheck,
   RoleCheck(["admin"]),
   validate(numericIdValidation, "params"),
-  SuppController.delete,
+  CtgController.delete,
 );
 
 module.exports = router;

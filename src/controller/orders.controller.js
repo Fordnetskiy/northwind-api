@@ -1,6 +1,8 @@
 const OrderService = require("../service/orders.service");
 
 class OrderController {
+  // Admin / Employee routes
+
   create = async (req, res, next) => {
     try {
       const result = await OrderService.create(req.body);
@@ -59,6 +61,123 @@ class OrderController {
     try {
       const id = parseInt(req.params.id);
       const result = await OrderService.delete(id);
+
+      res.status(200).json({
+        success: true,
+        ...result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  // Customer routes
+
+  myOrderCreate = async (req, res, next) => {
+    try {
+      const customerId = req.user.customerId;
+      const {
+        employeeId,
+        shipper,
+        freight,
+        address,
+        city,
+        country,
+        postalCode,
+        productId,
+        quantity,
+      } = req.body;
+
+      const result = await OrderService.myCreate(customerId, {
+        employeeId,
+        shipper,
+        freight,
+        address,
+        city,
+        country,
+        postalCode,
+        productId,
+        quantity,
+      });
+
+      res.status(201).json({
+        success: true,
+        ...result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  myOrders = async (req, res, next) => {
+    try {
+      const customerId = req.user.customerId;
+      const result = await OrderService.myOrders(customerId, req.query);
+
+      res.status(200).json({
+        success: true,
+        ...result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  myOrder = async (req, res, next) => {
+    try {
+      const customerId = req.user.customerId;
+      const id = parseInt(req.params.id);
+
+      const result = await OrderService.myOrder(customerId, id);
+
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  updateMyOrder = async (req, res, next) => {
+    try {
+      const customerId = req.user.customerId;
+      const id = parseInt(req.params.id);
+      const {
+        requiredDate,
+        shipper,
+        address,
+        city,
+        region,
+        postalCode,
+        country,
+      } = req.body;
+
+      const result = await OrderService.updateMyOrder(customerId, id, {
+        requiredDate,
+        shipper,
+        address,
+        city,
+        region,
+        postalCode,
+        country,
+      });
+
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  deleteMyOrder = async (req, res, next) => {
+    try {
+      const customerId = req.user.customerId;
+      const id = parseInt(req.params.id);
+
+      const result = await OrderService.deleteMyOrder(customerId, id);
 
       res.status(200).json({
         success: true,

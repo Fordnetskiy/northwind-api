@@ -12,7 +12,15 @@ const app = express();
 app.use(morgan);
 app.use(express.json());
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    swaggerOptions: {
+      docExpansion: "none",
+    },
+  }),
+);
 app.use("/api/v1", routes);
 
 app.use((req, res) => {

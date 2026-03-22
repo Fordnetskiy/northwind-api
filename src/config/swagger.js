@@ -9,6 +9,15 @@ const options = {
       description: "REST API for Northwind DB",
       version: "1.1.0",
     },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
   },
   apis: [path.join(__dirname, "../docs/*.js")],
 };

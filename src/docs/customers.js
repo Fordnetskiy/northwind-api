@@ -11,6 +11,8 @@
  *   get:
  *     summary: Get all customers
  *     tags: [Customers]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -65,6 +67,8 @@
  *   get:
  *     summary: Get all deleted customers
  *     tags: [Customers]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Success
@@ -92,6 +96,8 @@
  *   patch:
  *     summary: Restore deleted customer
  *     tags: [Customers]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -126,6 +132,8 @@
  *   get:
  *     summary: Get customer by id
  *     tags: [Customers]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -173,6 +181,8 @@
  *   post:
  *     summary: Create customer
  *     tags: [Customers]
+ *     security:
+ *      - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -211,6 +221,8 @@
  *   put:
  *     summary: Update customer
  *     tags: [Customers]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -271,6 +283,8 @@
  *   delete:
  *     summary: Delete customer (soft delete)
  *     tags: [Customers]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
