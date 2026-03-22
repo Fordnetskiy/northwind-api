@@ -55,7 +55,6 @@ class AuthService {
     const passwordHash = await bcrypt.hash(password, this.#SALT_ROUNDS);
     const customerId = await this.#generateId(email);
     const contactName = email.split("@")[0];
-    console.log(contactName);
 
     // transaction
     const client = await db.connect();
@@ -72,7 +71,6 @@ class AuthService {
       `,
         [customerId, contactName],
       );
-      console.log(`${customerId} - ${contactName}`);
 
       // created user account
       const { rows } = await client.query(
@@ -85,7 +83,6 @@ class AuthService {
       `,
         [email, passwordHash, customerId],
       );
-      console.log(rows[0]);
 
       await client.query("COMMIT");
 
