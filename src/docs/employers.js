@@ -1,5 +1,3 @@
-// src/docs/employees.js
-
 /**
  * @swagger
  * tags:
@@ -13,6 +11,8 @@
  *   get:
  *     summary: Get all employees
  *     tags: [Employees]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -65,9 +65,11 @@
 /**
  * @swagger
  * /api/v1/employees/restore/{id}:
- *   post:
+ *   patch:
  *     summary: Restore deleted employee
  *     tags: [Employees]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -105,6 +107,8 @@
  *   get:
  *     summary: Get employee by id
  *     tags: [Employees]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -143,6 +147,8 @@
  *   post:
  *     summary: Create employee
  *     tags: [Employees]
+ *     security:
+ *      - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -180,6 +186,8 @@
  *   put:
  *     summary: Update employee
  *     tags: [Employees]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -248,6 +256,8 @@
  *   delete:
  *     summary: Delete employee (soft delete)
  *     tags: [Employees]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -279,6 +289,8 @@
  *   get:
  *     summary: Get all orders by employee
  *     tags: [Employees]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id

@@ -2,7 +2,8 @@ const db = require("../config/database");
 const AppError = require("../utils/AppError");
 
 class OrderService {
-  // Create ====
+  #MAX_LIMIT = 50;
+  // Admin / Employee
   create = async (data) => {
     // Data destructurization -!-
     const {
@@ -26,9 +27,10 @@ class OrderService {
 
       const shipName = await client.query(
         `
-        SELECT ship_name
-        FROM orders
-        WHERE customer_id = $1 AND ship_name IS NOT NULL
+        SELECT company_name
+        FROM customers
+        WHERE customer_id = $1
+        FOR UPDATE
       `,
         [customerId],
       );
@@ -47,7 +49,7 @@ class OrderService {
           employeeId,
           shipper,
           freight,
-          shipName.rows[0].ship_name,
+          shipName.rows[0].company_name,
           address,
           city,
           country,
@@ -117,7 +119,6 @@ class OrderService {
     }
   };
 
-  // Read ===
   getAll = async (q) => {
     // these variables are for pagination -!-
     const page = parseInt(q.page) || 1;
@@ -144,14 +145,29 @@ class OrderService {
       db.query(`
         SELECT COUNT(*)
         FROM orders
+        JOIN customers c USING(customer_id)
+        JOIN employees USING(employee_id)
+        JOIN shippers s ON s.shipper_id = orders.ship_via
       `),
     ]);
 
     const totalItems = parseInt(totItems.rows[0].count);
     const totalPages = Math.ceil(totalItems / limit);
 
+    if (totalItems === 0) {
+      return {
+        data: [],
+        meta: {
+          total: 0,
+          page: 1,
+          totalPages: 0,
+          limit,
+        },
+      };
+    }
+
     if (page > totalPages) {
-      throw new AppError(400, `There is ${totalPages} pages only, not more`);
+      throw new AppError(404, `There is ${totalPages} pages only, not more`);
     }
 
     return {
@@ -282,6 +298,314 @@ class OrderService {
     }
 
     // Transaction ends
+  };
+
+  // Customer
+
+  myCreate = async (customerId, data) => {
+    const {
+      employeeId,
+      shipper,
+      freight,
+      address,
+      city,
+      country,
+      postalCode,
+      productId,
+      quantity,
+    } = data;
+
+    const client = await db.connect();
+
+    try {
+      await client.query("BEGIN");
+
+      const shipName = await client.query(
+        `
+        SELECT company_name
+        FROM customers
+        WHERE customer_id = $1
+        FOR UPDATE
+      `,
+        [customerId],
+      );
+
+      // Creates order -!-
+      const orderRes = await client.query(
+        `
+        INSERT INTO orders (customer_id, employee_id, order_date, required_date, ship_via, freight, ship_name, ship_address, ship_city, ship_country, ship_postal_code)
+        VALUES (
+          $1, $2, CURRENT_DATE, CURRENT_DATE + INTERVAL '7 days', $3, $4, $5, $6, $7, $8, $9
+        )
+        RETURNING *
+      `,
+        [
+          customerId,
+          employeeId,
+          shipper,
+          freight,
+          shipName.rows[0].company_name,
+          address,
+          city,
+          country,
+          postalCode,
+        ],
+      );
+      const orderId = orderRes.rows[0].order_id;
+
+      // Extract price and units from product table with pessimistic lock -!-
+      const productRes = await client.query(
+        `
+        SELECT unit_price, units_in_stock
+        FROM products
+        WHERE product_id = $1
+        FOR UPDATE
+      `,
+        [productId],
+      );
+      const price = productRes.rows[0].unit_price;
+      const stock = productRes.rows[0].units_in_stock;
+
+      if (stock === null) {
+        throw new AppError(404, "Product not found!");
+      }
+
+      // Creates order details after order creation -!-
+      await client.query(
+        `
+        INSERT INTO order_details (
+          order_id, product_id, unit_price, quantity, discount
+        ) VALUES (
+          $1, $2, $3, $4, $5
+        )
+      `,
+        [orderId, productId, price, quantity, 0],
+      );
+
+      const res = await client.query(
+        `
+        UPDATE products
+        SET units_in_stock = units_in_stock - $1
+        WHERE product_id = $2 AND units_in_stock >= $1
+        RETURNING units_in_stock
+      `,
+        [quantity, productId],
+      );
+
+      if (res.rowCount === 0) {
+        throw new AppError(404, "Not enough stock!");
+      }
+
+      const sum = Math.round(quantity * price);
+
+      await client.query("COMMIT");
+
+      return {
+        data: orderRes.rows[0],
+        price,
+        quantity,
+        totalPrice: sum,
+      };
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw new AppError(400, error);
+    } finally {
+      client.release();
+    }
+  };
+
+  myOrders = async (customerId, q) => {
+    // Pagination variables
+    const page = Math.max(parseInt(q.page) || 1, 1); // if client`s value will be negative, 1
+    const clientLimit = Math.max(parseInt(q.limit) || 10, 10); // if client`s value will be negative, 10
+    const limit = Math.min(clientLimit, this.#MAX_LIMIT);
+    const offset = (page - 1) * limit;
+
+    const [result, totItems] = await Promise.all([
+      db.query(
+        `
+        SELECT order_id, customer_id, c.company_name AS customer_company,
+            CONCAT(first_name,  ' ', last_name) AS employee, order_date, required_date, shipped_date, s.company_name AS shipper,
+            freight, ship_address, ship_city, ship_country, ship_postal_code
+        FROM orders
+        JOIN customers c USING(customer_id)
+        JOIN employees USING(employee_id)
+        JOIN shippers s ON s.shipper_id = orders.ship_via
+        WHERE customer_id = $1
+        ORDER BY order_id
+        OFFSET $2
+        LIMIT $3
+      `,
+        [customerId, offset, limit],
+      ),
+      db.query(
+        `
+        SELECT COUNT(*)
+        FROM orders
+        JOIN customers c USING(customer_id)
+        JOIN employees USING(employee_id)
+        JOIN shippers s ON s.shipper_id = orders.ship_via
+        WHERE customer_id = $1
+      `,
+        [customerId],
+      ),
+    ]);
+
+    const totalItems = parseInt(totItems.rows[0].count);
+    const totalPages = Math.ceil(totalItems / limit);
+
+    if (totalItems === 0) {
+      return {
+        data: [],
+        meta: {
+          total: 0,
+          page: 1,
+          totalPages: 0,
+          limit,
+        },
+      };
+    }
+
+    if (page > totalPages) {
+      throw new AppError(404, `There is ${totalPages} pages only, not more`);
+    }
+
+    return {
+      data: result.rows,
+      meta: {
+        total: totalItems,
+        page,
+        totalPages,
+        limit,
+      },
+    };
+  };
+
+  myOrder = async (customerId, id) => {
+    const order = await db.query(
+      `
+      SELECT order_id, customer_id, c.company_name AS customer_company,
+            CONCAT(first_name,  ' ', last_name) AS employee, order_date, required_date, shipped_date, s.company_name AS shipper,
+            freight, ship_address, ship_city, ship_country,ship_postal_code
+      FROM orders
+      JOIN customers c USING(customer_id)
+      JOIN employees USING(employee_id)
+      JOIN shippers s ON s.shipper_id = orders.ship_via
+      WHERE customer_id = $1 AND order_id = $2
+    `,
+      [customerId, id],
+    );
+
+    if (order.rowCount === 0) {
+      throw new AppError(404, "Order not found / exists");
+    }
+
+    return order.rows[0];
+  };
+
+  updateMyOrder = async (customerId, id, data) => {
+    const {
+      requiredDate,
+      shipper,
+      address,
+      city,
+      region,
+      postalCode,
+      country,
+    } = data;
+
+    const updatedOrder = await db.query(
+      `
+      UPDATE orders 
+      SET required_date = $1, ship_via = $2, 
+          ship_address = $3, ship_city = $4,
+          ship_region = $5, ship_postal_code = $6,
+          ship_country = $7
+      WHERE customer_id = $8 AND order_id = $9
+      RETURNING *
+    `,
+      [
+        requiredDate,
+        shipper,
+        address,
+        city,
+        region,
+        postalCode,
+        country,
+        customerId,
+        id,
+      ],
+    );
+
+    if (updatedOrder.rowCount === 0) {
+      throw new AppError(404, "Order not found / exists");
+    }
+
+    return updatedOrder.rows[0];
+  };
+
+  deleteMyOrder = async (customerId, id) => {
+    const client = await db.connect();
+
+    // Transaction begins
+
+    try {
+      await client.query("BEGIN");
+
+      const orderDetails = await client.query(
+        `
+        SELECT product_id, quantity FROM order_details
+        WHERE order_id = $1
+        FOR UPDATE  
+      `,
+        [id],
+      );
+
+      if (orderDetails.rowCount === 0) {
+        throw new AppError(404, "Order not found / exists");
+      }
+
+      // Deletes order details
+      await client.query(
+        `
+        DELETE FROM order_details
+        WHERE order_id = $1
+      `,
+        [id],
+      );
+
+      // Deletes order
+      await client.query(
+        `
+        DELETE FROM orders
+        WHERE customer_id = $1 AND order_id = $2
+      `,
+        [customerId, id],
+      );
+
+      // Restores units_in_stock for product after order deletion
+      for (const row of orderDetails.rows) {
+        await client.query(
+          `
+        UPDATE products
+        SET units_in_stock = units_in_stock + $1
+        WHERE product_id = $2
+      `,
+          [row.quantity, row.product_id],
+        );
+      }
+
+      await client.query("COMMIT");
+
+      return {
+        message: "Order was deleted!",
+      };
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
   };
 }
 

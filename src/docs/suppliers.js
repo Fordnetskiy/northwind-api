@@ -1,5 +1,3 @@
-// src/docs/suppliers.js
-
 /**
  * @swagger
  * tags:
@@ -13,6 +11,8 @@
  *   get:
  *     summary: Get all suppliers
  *     tags: [Suppliers]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -61,6 +61,8 @@
  *   patch:
  *     summary: Restore deleted supplier
  *     tags: [Suppliers]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -93,6 +95,8 @@
  *   get:
  *     summary: Get supplier by id
  *     tags: [Suppliers]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -138,6 +142,8 @@
  *   post:
  *     summary: Create supplier
  *     tags: [Suppliers]
+ *     security:
+ *      - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -179,6 +185,8 @@
  *   put:
  *     summary: Update supplier
  *     tags: [Suppliers]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -239,6 +247,8 @@
  *   delete:
  *     summary: Delete supplier (soft delete)
  *     tags: [Suppliers]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
