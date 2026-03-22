@@ -62,3 +62,39 @@ REST API for Northwind database built with Node.js and Express.
 
 Run the app and open:
 http://localhost:3000/api-docs
+
+## Database Setup
+
+1. Create a new PostgreSQL database:
+
+```sql
+   CREATE DATABASE northwind;
+```
+
+2. Import the database schema:
+
+```bash
+   psql -U postgres -d northwind -f database/northwind_dump.sql
+```
+
+### First Admin Setup
+
+1. Register a new user via API:
+
+```
+   POST /api/v1/auth/register
+```
+
+2. Manually set the admin role in the database:
+
+```sql
+   UPDATE users SET role = 'admin' WHERE email = 'your@email.com';
+```
+
+3. Login with your credentials:
+
+```
+   POST /api/v1/auth/login
+```
+
+4. Copy the token from the response and use it in Swagger UI via the **Authorize** 🔒 button
